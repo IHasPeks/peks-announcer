@@ -258,7 +258,7 @@ if __name__ == '__main__':
     gui.title("LoL Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
     volume_slider = Scale(gui, from_=0, to=100, orient=HORIZONTAL, command=update_volume)
-    volume_slider.set(100)
+    volume_slider.set(50)
     volume_slider.grid(row=0, column=0)
     mute_button = Button(gui, text='Mute', command=mute)
     mute_button.grid(row=0, column=1)
