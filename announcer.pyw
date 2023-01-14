@@ -7,6 +7,7 @@ import sys
 from os import path, _exit
 import random
 from tkinter import *
+from tkinter.ttk import Combobox
 import threading
 
 if os.name == "posix":
@@ -288,16 +289,22 @@ def announcer_loop():
 if __name__ == '__main__':
     # GUI that shows a slider for sound volume control and a button for testing volume.
     gui = Tk()
-    gui.geometry("250x100")
+    gui.geometry("260x125")
     gui.title("Peks Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
     gui.wm_iconbitmap("appicon.ico")
+    title = Label(text="Hello World")
+    title.grid(row=0, column=0)
     volume_slider = Scale(gui, from_=0, to=100, orient=HORIZONTAL, command=update_volume)
     volume_slider.set(50)
-    volume_slider.grid(row=0, column=0)
+    volume_slider.grid(row=1, column=0)
     mute_button = Button(gui, text='Mute', command=mute)
-    mute_button.grid(row=0, column=1)
+    mute_button.grid(row=1, column=1)
     Button(gui, text='Test volume', command=play_random_sound).grid()
+    switchtitle = Label(text="Hello World")
+    switchtitle.grid(row=2, column=1)
+    pack_switch = Combobox(values=["Peks", "Myles", "Test"])
+    pack_switch.grid(row=3, column=1)
     announcer_thread = threading.Thread(target=announcer_loop)
     announcer_thread.start()
     mainloop()
