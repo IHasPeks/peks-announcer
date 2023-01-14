@@ -8,6 +8,8 @@ import random
 import tkinter
 import tkinter.ttk
 import threading
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 if os.name == "posix":
     if "XDG_CONFIG_HOME" in os.environ and "XDG_CACHE_HOME" in os.environ:
@@ -275,50 +277,30 @@ def announcer_loop():
             log_file.flush()
             time.sleep(5)
 
-
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Peks Announcer")
+        self.setFixedSize(250, 150)
+        self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
+        self.mute_button = QtWidgets.QPushButton("Mute", self)
+        self.test_volume_button = QtWidgets.QPushButton("Test sound", self)
+        self.sound_pack = QtWidgets.QComboBox(self)
+        self.sound_pack.addItems(SOUND_PACKS)
+        self.central_widget = QtWidgets.QWidget(self)
+        self.setCentralWidget(self.central_widget)
+        self.layout = QtWidgets.QGridLayout(self.central_widget)
+        self.layout.addWidget(self.volume_slider, 1,1)
+        self.layout.addWidget(self.mute_button, 1,0)
+        self.layout.addWidget(self.test_volume_button, 1,4)
+        self.layout.addWidget(self.sound_pack, 3,0)
+    def setup_connections(self):
+        self.volume_slider.valueChanged.connect(update_volume)
+        self.mute_button.clicked.connect(mute)
+        self.test_volume_button.clicked.connect(play_random_sound)
 if __name__ == '__main__':
-    gui = tkinter.Tk()
-    gui.geometry("245x125")
-    gui.resizable(False, False)
-    gui.title("Peks Announcer")
-    gui.protocol("WM_DELETE_WINDOW", close_script)
-
-    # Icon is not compatible on posix systems
-    if os.name == "nt":
-        gui.wm_iconbitmap("appicon.ico")
-
-    title = tkinter.Label(text="Hello World")
-    title.grid(row=0, column=0, columnspan=2)
-
-    volume_slider = tkinter.Scale(
-        gui,
-        from_=0,
-        to=100,
-        orient=tkinter.HORIZONTAL,
-        command=update_volume,
-    )
-    mute_button = tkinter.Button(gui, text='Mute', command=mute)
-    mute_button.grid(row=1, column=1)
-
-    volume_slider.set(50)
-    volume_slider.grid(row=1, column=2)
-
-    test_volume_button = tkinter.Button(
-        gui,
-        text='Test sound',
-        command=play_random_sound
-    )
-    test_volume_button.grid(row=1, column=3)
-
-    switchtitle = tkinter.Label(text="Choose Sound Pack")
-    switchtitle.grid(row=2, column=0, columnspan=4)
-
-    sound_pack = tkinter.StringVar()
-    sound_pack.set(SOUND_PACKS[0])
-    sound_pack_dropdown = tkinter.OptionMenu(gui, sound_pack, *SOUND_PACKS)
-    sound_pack_dropdown.grid(row=3, column=0, columnspan=4)
-
-    announcer_thread = threading.Thread(target=announcer_loop)
-    announcer_thread.start()
-
-    gui.mainloop()
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    window.setup_connections()
+    window.show()
+    sys.exit(app.exec_())
