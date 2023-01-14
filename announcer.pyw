@@ -266,4 +266,3 @@ if __name__ == '__main__':
     announcer_thread = threading.Thread(target=announcer_loop)
     announcer_thread.start()
     mainloop()
-
