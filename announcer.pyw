@@ -2,10 +2,36 @@ import requests
 import time
 import urllib3
 import audioplayer
+import os
+import sys
 from os import path, _exit
 import random
 from tkinter import *
 import threading
+
+if os.name == "posix":
+    if "XDG_CONFIG_HOME" in os.environ and "XDG_CACHE_HOME" in os.environ:
+        LOGS_DIR = os.path.join(os.environ["XDG_CACHE_HOME"], "announcer")
+    elif "HOME" in os.environ:
+        LOGS_DIR = os.path.join(os.environ["HOME"], ".cache/announcer")
+    else:
+        print(
+            "HOME environment variable is not set, something must be very wrong.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+elif os.name == "nt":
+    if "APPDATA" in os.environ:
+        LOGS_DIR = os.path.join(os.environ["APPDATA"], "announcer")
+    else:
+        print(
+            "APPDATA is not set, something must be very wrong.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+else:
+    print("Your OS is not supported", file=sys.stderr)
+    sys.exit(1)
 
 SOUNDS_FOLDER = "sounds/"
 EVENT_SOUNDS = {
@@ -82,14 +108,16 @@ except:
     pass
 
 def announcer_loop():
+
     # File for logging exceptions.
-    log_file = open("log.txt", "w")
-    
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    log_file = open(os.path.join(LOGS_DIR, "logs.txt"), "w")
+
     global previous_game_time
     global game_time
     global previous_event_count
     global event_count
-    
+
     while True:
         try:
             # Get all data from the game in JSON format.

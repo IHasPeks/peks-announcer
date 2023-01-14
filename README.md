@@ -4,4 +4,8 @@ Changes the default League of Legends announcer using Live Client Data API. Note
 
 ## Installation guide
 
-You can either download the source code and run ```python announcer.pyw``` or [download the executable file](https://github.com/auxermen/lol-announcer/releases/download/v0.1/lol-announcer.zip).
+To run make sure to have a python interpreter.
+```sh
+pip install -r requirements.txt
+python announcer.pyw
+```
