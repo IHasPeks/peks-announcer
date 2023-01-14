@@ -49,6 +49,10 @@ def play_event_sound(event):
 def update_volume(v):
     global volume
     volume = int(v)
+
+def mute():
+    global volume_slider
+    volume_slider.set(0)
     
 def play_random_sound():
     play_event_sound(random.choice(list(EVENT_SOUNDS.keys())))
@@ -257,6 +261,8 @@ if __name__ == '__main__':
     volume_slider.set(100)
     volume_slider.pack()
     Button(gui, text='Test volume', command=play_random_sound).pack()
+    mute_button = Button(gui, text='Mute', command=mute)
+    mute_button.pack()
     announcer_thread = threading.Thread(target=announcer_loop)
     announcer_thread.start()
     mainloop()
