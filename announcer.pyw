@@ -71,8 +71,7 @@ volume = 100
 def play_event_sound(event):
     ap = audioplayer.AudioPlayer(SOUNDS_FOLDER + random.choice(EVENT_SOUNDS[event]))
     ap.volume = volume
-    ap.play(block=False)
-    time.sleep(10)
+    ap.play(block=True)
 
 def update_volume(v):
     global volume
