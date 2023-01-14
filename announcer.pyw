@@ -70,7 +70,8 @@ volume = 100
 def play_event_sound(event):
     ap = audioplayer.AudioPlayer(SOUNDS_FOLDER + random.choice(EVENT_SOUNDS[event]))
     ap.volume = volume
-    ap.play(block=True)
+    ap.play(block=False)
+    time.sleep(10)
 
 def update_volume(v):
     global volume
@@ -81,7 +82,12 @@ def mute():
     volume_slider.set(0)
     
 def play_random_sound():
-    play_event_sound(random.choice(list(EVENT_SOUNDS.keys())))
+    sound = random.choice(list(EVENT_SOUNDS.keys()))
+    threading.Thread(
+        target=play_event_sound,
+        args=(sound,),
+    ).start()
+    # play_event_sound(random.choice(list(EVENT_SOUNDS.keys())))
     
 def close_script():
     gui.quit()
@@ -295,3 +301,4 @@ if __name__ == '__main__':
     announcer_thread = threading.Thread(target=announcer_loop)
     announcer_thread.start()
     mainloop()
+
