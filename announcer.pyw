@@ -278,7 +278,8 @@ def announcer_loop():
 
 if __name__ == '__main__':
     gui = tkinter.Tk()
-    gui.geometry("300x150")
+    gui.geometry("245x125")
+    gui.resizable(False, False)
     gui.title("Peks Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
 
@@ -297,17 +298,17 @@ if __name__ == '__main__':
         command=update_volume,
     )
     mute_button = tkinter.Button(gui, text='Mute', command=mute)
-    mute_button.grid(row=1, column=0)
+    mute_button.grid(row=1, column=1)
 
     volume_slider.set(50)
-    volume_slider.grid(row=1, column=1, columnspan=2)
+    volume_slider.grid(row=1, column=2)
 
     test_volume_button = tkinter.Button(
         gui,
-        text='Test volume',
+        text='Test sound',
         command=play_random_sound
     )
-    test_volume_button.grid(row=1, column=4)
+    test_volume_button.grid(row=1, column=3)
 
     switchtitle = tkinter.Label(text="Choose Sound Pack")
     switchtitle.grid(row=2, column=0, columnspan=4)
