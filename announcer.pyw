@@ -283,8 +283,9 @@ if __name__ == '__main__':
     # GUI that shows a slider for sound volume control and a button for testing volume.
     gui = Tk()
     gui.geometry("250x100")
-    gui.title("LoL Announcer")
+    gui.title("Peks Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
+    gui.wm_iconbitmap("appicon.ico")
     volume_slider = Scale(gui, from_=0, to=100, orient=HORIZONTAL, command=update_volume)
     volume_slider.set(50)
     volume_slider.grid(row=0, column=0)
