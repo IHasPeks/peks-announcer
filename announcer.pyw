@@ -292,7 +292,11 @@ if __name__ == '__main__':
     gui.geometry("260x125")
     gui.title("Peks Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
-    gui.wm_iconbitmap("appicon.ico")
+
+    # Icon is not compatible on posix systems
+    if os.name == "nt":
+        gui.wm_iconbitmap("appicon.ico")
+
     title = Label(text="Hello World")
     title.grid(row=0, column=0)
     volume_slider = Scale(gui, from_=0, to=100, orient=HORIZONTAL, command=update_volume)
