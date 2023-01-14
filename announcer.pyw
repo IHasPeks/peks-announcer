@@ -4,10 +4,9 @@ import urllib3
 import audioplayer
 import os
 import sys
-from os import path, _exit
 import random
-from tkinter import *
-from tkinter.ttk import Combobox
+import tkinter
+import tkinter.ttk
 import threading
 
 if os.name == "posix":
@@ -35,65 +34,46 @@ else:
     sys.exit(1)
 
 SOUNDS_FOLDER = "sounds/"
-EVENT_SOUNDS = {
-    "Welcome": ["welcometosummonersrift.mp3"],
-    "MinionsSpawningSoon": ["30secondsuntilminionsspawn.mp3"],
-    "MinionsSpawning": ["minionshavespawned.mp3"],
-    "FirstBlood": ["firstblood.mp3"],
-    "PlayerKill": ["youhaveslainanenemy1.mp3", "youhaveslainanenemy2.mp3", "youhaveslainanenemy3.mp3"],
-    "PlayerDeath": ["youhavebeenslain1.mp3", "youhavebeenslain2.mp3"],
-    "AllyDeath": ["anallyhasbeenslain1.mp3", "anallyhasbeenslain2.mp3"],
-    "AllyKill": ["anenemyhasbeenslain1.mp3", "anenemyhasbeenslain2.mp3", "anenemyhasbeenslain3.mp3"],
-    "AllyDoubleKill": ["doublekill1.mp3", "doublekill2.mp3"],
-    "AllyTripleKill": ["triplekill.mp3"],
-    "AllyQuadraKill": ["quadrakill.mp3"],
-    "AllyPentaKill": ["pentakill1.mp3", "pentakill2.mp3"],
-    "EnemyDoubleKill": ["enemydoublekill.mp3"],
-    "EnemyTripleKill": ["enemytriplekill.mp3"],
-    "EnemyQuadraKill": ["enemyquadrakill.mp3"],
-    "EnemyPentaKill": ["enemypentakill.mp3"],
-    "AllyAce": ["allyace.mp3"],
-    "EnemyAce": ["enemyace.mp3"],
-    "Executed": ["executed1.mp3", "executed2.mp3", "executed3.mp3"],
-    "AllyTurretKill": ["yourteamhasdestroyedaturret.mp3"],
-    "EnemyTurretKill": ["yourturrethasbeendestroyed1.mp3", "yourturrethasbeendestroyed2.mp3"],
-    "AllyInhibitorKill": ["yourteamhasdestroyedaninhibitor1.mp3", "yourteamhasdestroyedaninhibitor2.mp3"],
-    "EnemyInhibitorKill": ["yourinhibitorhasbeendestroyed1.mp3", "yourinhibitorhasbeendestroyed2.mp3"],
-    "AllyInhibitorRespawningSoon": ["yourinhibitorisrespawningsoon.mp3"],
-    "EnemyInhibitorRespawningSoon": ["enemyinhibitorisrespawningsoon.mp3"],
-    "AllyInhibitorRespawned": ["yourinhibitorhasrespawned.mp3"],
-    "EnemyInhibitorRespawned": ["enemyinhibitorhasrespawned.mp3"],
-    "Victory": ["victory.mp3"],
-    "Defeat": ["defeat.mp3"],
-}
+SOUND_PACKS = os.listdir(SOUNDS_FOLDER)
 volume = 100
 
-def play_event_sound(event):
-    ap = audioplayer.AudioPlayer(SOUNDS_FOLDER + random.choice(EVENT_SOUNDS[event]))
+
+def play_event_sound(event: str):
+    global sound_pack
+    event_sounds = os.path.join(SOUNDS_FOLDER, sound_pack.get(), event)
+    sound = random.choice(os.listdir(event_sounds))
+    ap = audioplayer.AudioPlayer(os.path.join(event_sounds, sound))
     ap.volume = volume
     ap.play(block=True)
+
 
 def update_volume(v):
     global volume
     volume = int(v)
 
+
 def mute():
     global volume_slider
     volume_slider.set(0)
-    
+
+
 def play_random_sound():
-    sound = random.choice(list(EVENT_SOUNDS.keys()))
+    global sound_pack
+    sound_pack_dir = os.path.join(SOUNDS_FOLDER, sound_pack.get())
+    events = os.listdir(sound_pack_dir)
+    event = random.choice(events)
     threading.Thread(
         target=play_event_sound,
-        args=(sound,),
+        args=(event,),
     ).start()
-    # play_event_sound(random.choice(list(EVENT_SOUNDS.keys())))
-    
+
+
 def close_script():
     gui.quit()
     gui.destroy()
-    _exit(1)
-    
+    os._exit(0)
+
+
 # Ignore the Unverified HTTPS request warning.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -102,19 +82,23 @@ game_time = 0
 previous_event_count = 0
 event_count = 0
 
-# Get event count so if the program is started in the middle of the match it doesn't play every announcement
-# sound which happened until that point.
+# Get event count so if the program is started in the middle of the match
+# it doesn't play every announcement sound which happened until that point.
 try:
     # Get all data from the game in JSON format.
-    all_game_data = requests.get('https://127.0.0.1:2999/liveclientdata/allgamedata', verify=False).json()
+    all_game_data = requests.get(
+        'https://127.0.0.1:2999/liveclientdata/allgamedata',
+        verify=False
+    ).json()
     events = all_game_data["events"]["Events"]
     event_count = len(events)
     previous_event_count = event_count
 except:
     pass
 
-def announcer_loop():
 
+def announcer_loop():
+    global stop
     # File for logging exceptions.
     os.makedirs(LOGS_DIR, exist_ok=True)
     log_file = open(os.path.join(LOGS_DIR, "logs.txt"), "w")
@@ -124,13 +108,19 @@ def announcer_loop():
     global previous_event_count
     global event_count
 
+    global sound_pack
+
     while True:
         try:
             # Get all data from the game in JSON format.
-            all_game_data = requests.get('https://127.0.0.1:2999/liveclientdata/allgamedata', verify=False).json()
+            all_game_data = requests.get(
+                'https://127.0.0.1:2999/liveclientdata/allgamedata',
+                verify=False
+            ).json()
 
             game_time = all_game_data["gameData"]["gameTime"]
             events = all_game_data["events"]["Events"]
+
             # TODO: move some things to only update once per game.
             player_name = all_game_data["activePlayer"]["summonerName"]
             player_team = ""
@@ -139,7 +129,8 @@ def announcer_loop():
             ally_team_players = []
             enemy_team_players = []
 
-            # Populate team chaos and team order players lists and figure out which team the player is on.
+            # Populate team chaos and team order players lists
+            # and figure out which team the player is on.
             for player in all_game_data["allPlayers"]:
                 if player["team"] == "ORDER":
                     team_order_players.append(player["summonerName"])
@@ -273,7 +264,7 @@ def announcer_loop():
                         play_event_sound("Victory")
                     # Defeat
                     elif event["Result"] == "Lose":
-                        play_event_sound("Defeat")    
+                        play_event_sound("Defeat")
                 # TODO: killing streaks
             previous_game_time = game_time
             previous_event_count = event_count
@@ -283,12 +274,11 @@ def announcer_loop():
             log_file.write(repr(e) + "\n")
             log_file.flush()
             time.sleep(5)
-            
+
 
 if __name__ == '__main__':
-    # GUI that shows a slider for sound volume control and a button for testing volume.
-    gui = Tk()
-    gui.geometry("260x125")
+    gui = tkinter.Tk()
+    gui.geometry("300x150")
     gui.title("Peks Announcer")
     gui.protocol("WM_DELETE_WINDOW", close_script)
 
@@ -296,19 +286,38 @@ if __name__ == '__main__':
     if os.name == "nt":
         gui.wm_iconbitmap("appicon.ico")
 
-    title = Label(text="Hello World")
-    title.grid(row=0, column=0)
-    volume_slider = Scale(gui, from_=0, to=100, orient=HORIZONTAL, command=update_volume)
+    title = tkinter.Label(text="Hello World")
+    title.grid(row=0, column=0, columnspan=2)
+
+    volume_slider = tkinter.Scale(
+        gui,
+        from_=0,
+        to=100,
+        orient=tkinter.HORIZONTAL,
+        command=update_volume,
+    )
+    mute_button = tkinter.Button(gui, text='Mute', command=mute)
+    mute_button.grid(row=1, column=0)
+
     volume_slider.set(50)
-    volume_slider.grid(row=1, column=0)
-    mute_button = Button(gui, text='Mute', command=mute)
-    mute_button.grid(row=1, column=1)
-    Button(gui, text='Test volume', command=play_random_sound).grid()
-    switchtitle = Label(text="Hello World")
-    switchtitle.grid(row=2, column=1)
-    pack_switch = Combobox(values=["Peks", "Myles", "Test"])
-    pack_switch.grid(row=3, column=1)
+    volume_slider.grid(row=1, column=1, columnspan=2)
+
+    test_volume_button = tkinter.Button(
+        gui,
+        text='Test volume',
+        command=play_random_sound
+    )
+    test_volume_button.grid(row=1, column=4)
+
+    switchtitle = tkinter.Label(text="Choose Sound Pack")
+    switchtitle.grid(row=2, column=0, columnspan=4)
+
+    sound_pack = tkinter.StringVar()
+    sound_pack.set(SOUND_PACKS[0])
+    sound_pack_dropdown = tkinter.OptionMenu(gui, sound_pack, *SOUND_PACKS)
+    sound_pack_dropdown.grid(row=3, column=0, columnspan=4)
+
     announcer_thread = threading.Thread(target=announcer_loop)
     announcer_thread.start()
-    mainloop()
 
+    gui.mainloop()
