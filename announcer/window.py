@@ -35,7 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mute_button = QtWidgets.QPushButton("Mute")
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
         self.headerlabel = QtWidgets.QLabel("Hello World")
-        self.vollabel = QtWidgets.QLabel("Volume")
+        self.volume_level_label = QtWidgets.QLabel("Volume:")
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
         self.sound_pack = QtWidgets.QComboBox()
         self.sound_pack.addItems(SOUND_PACKS)
@@ -44,7 +44,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.layout = QtWidgets.QGridLayout(self.central_widget)
         self.layout.addWidget(self.headerlabel, 0, 1)
-        self.layout.addWidget(self.vollabel, 1, 1)
+        self.layout.addWidget(self.volume_level_label, 1, 1)
         self.layout.addWidget(self.volume_slider, 2, 1)
         self.layout.addWidget(self.mute_button, 1, 0)
         self.layout.addWidget(self.test_volume_button, 1, 2)
@@ -67,6 +67,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setup_connections(self):
         self.volume_slider.valueChanged.connect(self.update_volume)
+        self.volume_slider.valueChanged.connect(self.update_volume_level)
+
         self.mute_button.clicked.connect(self.mute)
         self.test_volume_button.clicked.connect(self.play_random_sound)
 
@@ -75,6 +77,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_volume(self):
         pass
+
+    def update_volume_level(self):
+        volume_level = self.volume_slider.value()
+        self.volume_level_label.setText(f"Volume: {volume_level}%")
+
 
     def play_random_sound(self):
         sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]
