@@ -92,11 +92,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_volume(self):
         self.media_player.setVolume(self.volume_slider.value())
 
-
     def update_volume_level(self):
         volume_level = self.volume_slider.value()
         self.volume_level_label.setText(f"Volume: {volume_level}%")
-
 
     def play_random_sound(self):
         sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]
