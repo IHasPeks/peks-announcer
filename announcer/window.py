@@ -75,10 +75,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.test_volume_button.clicked.connect(self.play_random_sound)
 
     def mute(self):
-        pass
+        currentVolume = self.media_player.volume()
+        self.media_player.setVolume(0)
+        self.volume_slider.setValue(0)
 
     def update_volume(self):
-        pass
+        self.media_player.setVolume(self.volume_slider.value())
+
 
     def update_volume_level(self):
         volume_level = self.volume_slider.value()
