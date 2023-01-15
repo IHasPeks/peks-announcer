@@ -37,7 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mute_button = QtWidgets.QPushButton("Mute")
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
         self.headerlabel = QtWidgets.QLabel("Hello World")
-        self.volume_level_label = QtWidgets.QLabel("Volume:")
+        self.volume_level_label = QtWidgets.QLabel("Volume: 50%")
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
         self.sound_pack = QtWidgets.QComboBox()
         self.sound_pack.addItems(SOUND_PACKS)
