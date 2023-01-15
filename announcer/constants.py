@@ -36,8 +36,8 @@ SOUNDS_DIR_GLOBAL = os.path.join(os.path.dirname(__file__), "sounds/")
 
 SOUND_PACKS = dict()
 
-for dir in os.listdir(os.path.join(os.path.dirname(__file__), "sounds/")):
-    SOUND_PACKS[dir] = os.path.join(os.path.dirname(__file__), "sounds/", dir)
+for dir in os.listdir(SOUNDS_DIR_GLOBAL):
+    SOUND_PACKS[dir] = os.path.join(SOUNDS_DIR_GLOBAL, dir)
 
 for dir in os.listdir(SOUNDS_DIR_LOCAL):
     SOUND_PACKS[dir] = os.path.join(SOUNDS_DIR_LOCAL, dir)
