@@ -55,6 +55,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.sound_pack, 2, 1, 1, 2)
 
         self.media_player = QMediaPlayer()
+        self.media_player.setVolume(50)
 
         self.event_player = EventPlayer()
         self.event_player_thread = QThread()
