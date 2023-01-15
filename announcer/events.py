@@ -62,7 +62,10 @@ class Event:
         if not self.game_data:
             logger.warning("Polling without game data")
             return []
-        self.player_name = self.game_data["activePlayer"]["summonerName"]
+        try:
+            self.player_name = self.game_data["activePlayer"]["summonerName"]
+        except KeyError:
+            return []
         self.player_team = ""
         self.team_order_players = []
         self.team_chaos_players = []
