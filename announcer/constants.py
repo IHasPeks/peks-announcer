@@ -6,7 +6,9 @@ DIR_NAME = "lol-announcer"
 if os.name == "posix":
     if "XDG_CONFIG_HOME" in os.environ and "XDG_CACHE_HOME" in os.environ:
         LOGS_DIR = os.path.join(os.environ["XDG_CACHE_HOME"], DIR_NAME, "logs")
-        SOUNDS_DIR_LOCAL = os.path.join(os.environ["XDG_CONFIG_HOME"], DIR_NAME, "sounds")
+        SOUNDS_DIR_LOCAL = os.path.join(
+            os.environ["XDG_CONFIG_HOME"], DIR_NAME, "sounds"
+        )
     elif "HOME" in os.environ:
         HOME = os.environ["HOME"]
         LOGS_DIR = os.path.join(HOME, ".cache", DIR_NAME, "logs")
@@ -17,8 +19,8 @@ if os.name == "posix":
 elif os.name == "nt":
     if "APPDATA" in os.environ:
         APPDATA = os.environ["APPDATA"]
-        LOGS_DIR = os.path.join(APPDATA, DIR_NAME)
         LOGS_DIR = os.path.join(APPDATA, DIR_NAME, "logs")
+        SOUNDS_DIR_LOCAL = os.path.join(APPDATA, DIR_NAME, "sounds")
     else:
         print("APPDATA is not set.", file=sys.stderr)
         sys.exit(1)

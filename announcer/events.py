@@ -90,10 +90,18 @@ class Event:
             self.enemy_team_players = self.team_order_players
 
         # Welcome announcement.
-        if self.game_time >= 26 and self.previous_game_time < 26 and self.game_time < 28:
+        if (
+            self.game_time >= 26
+            and self.previous_game_time < 26
+            and self.game_time < 28
+        ):
             self.new_events.append("Welcome")
         # Minions spawning soon.
-        if self.game_time >= 36 and self.previous_game_time < 36 and self.game_time < 38:
+        if (
+            self.game_time >= 36
+            and self.previous_game_time < 36
+            and self.game_time < 38
+        ):
             self.new_events.append("MinionsSpawningSoon")
 
         # Loop over all new events.
@@ -102,11 +110,19 @@ class Event:
             event_name = event["EventName"]
 
             # Someone got first blood.
-            if event_name == "ChampionKill" and event_index < self.event_count - 1 and self.events[event_index + 1]["EventName"] == "FirstBlood":
+            if (
+                event_name == "ChampionKill"
+                and event_index < self.event_count - 1
+                and self.events[event_index + 1]["EventName"] == "FirstBlood"
+            ):
                 event_index += 1
                 self.new_events.append("FirstBlood")
             # Someone got a multikill.
-            elif event_name == "ChampionKill" and event_index < self.event_count - 1 and self.events[event_index + 1]["EventName"] == "Multikill":
+            elif (
+                event_name == "ChampionKill"
+                and event_index < self.event_count - 1
+                and self.events[event_index + 1]["EventName"] == "Multikill"
+            ):
                 multikill = self.events[event_index + 1]["KillStreak"]
                 # Ally got a multikill.
                 if event["KillerName"] in self.ally_team_players:
@@ -160,37 +176,77 @@ class Event:
             elif event_name == "TurretKilled":
                 turret_name = event["TurretKilled"]
                 # Ally team got a turret kill.
-                if turret_name[7:9] == "T2" and self.player_team == "ORDER" or turret_name[7:9] == "T1" and self.player_team == "CHAOS":
+                if (
+                    turret_name[7:9] == "T2"
+                    and self.player_team == "ORDER"
+                    or turret_name[7:9] == "T1"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("AllyTurretKill")
                 # Enemy team got a turret kill.
-                elif turret_name[7:9] == "T1" and self.player_team == "ORDER" or turret_name[7:9] == "T2" and self.player_team == "CHAOS":
+                elif (
+                    turret_name[7:9] == "T1"
+                    and self.player_team == "ORDER"
+                    or turret_name[7:9] == "T2"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("EnemyTurretKill")
             # A turret was killed.
             elif event_name == "InhibKilled":
                 inhib_name = event["InhibKilled"]
                 # Ally team got a turret kill.
-                if inhib_name[9:11] == "T2" and self.player_team == "ORDER" or inhib_name[9:11] == "T1" and self.player_team == "CHAOS":
+                if (
+                    inhib_name[9:11] == "T2"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T1"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("AllyInhibitorKill")
                 # Enemy team got a turret kill.
-                elif inhib_name[9:11] == "T1" and self.player_team == "ORDER" or inhib_name[9:11] == "T2" and self.player_team == "CHAOS":
+                elif (
+                    inhib_name[9:11] == "T1"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T2"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("EnemyInhibitorKill")
             # An inhibitor is respawning soon.
             elif event_name == "InhibRespawningSoon":
                 inhib_name = event["InhibRespawningSoon"]
                 # Ally team's inhibitor is respawning soon.
-                if inhib_name[9:11] == "T1" and self.player_team == "ORDER" or inhib_name[9:11] == "T2" and self.player_team == "CHAOS":
+                if (
+                    inhib_name[9:11] == "T1"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T2"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("AllyInhibitorRespawningSoon")
                 # Enemy team's inhibitor is respawning soon.
-                elif inhib_name[9:11] == "T2" and self.player_team == "ORDER" or inhib_name[9:11] == "T1" and self.player_team == "CHAOS":
+                elif (
+                    inhib_name[9:11] == "T2"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T1"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("EnemyInhibitorRespawningSoon")
             # An inhibitor has respawned.
             elif event_name == "InhibRespawned":
                 inhib_name = event["InhibRespawned"]
                 # Ally team's inhibitor has respawned.
-                if inhib_name[9:11] == "T1" and self.player_team == "ORDER" or inhib_name[9:11] == "T2" and self.player_team == "CHAOS":
+                if (
+                    inhib_name[9:11] == "T1"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T2"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("AllyInhibitorRespawned")
                 # Enemy team's inhibitor has respawned.
-                elif inhib_name[9:11] == "T2" and self.player_team == "ORDER" or inhib_name[9:11] == "T1" and self.player_team == "CHAOS":
+                elif (
+                    inhib_name[9:11] == "T2"
+                    and self.player_team == "ORDER"
+                    or inhib_name[9:11] == "T1"
+                    and self.player_team == "CHAOS"
+                ):
                     self.new_events.append("EnemyInhibitorRespawned")
             # Minions have spawned.
             elif event_name == "MinionsSpawning":
