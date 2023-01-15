@@ -29,15 +29,15 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Peks Announcer")
-        self.setFixedSize(250, 150)
+        self.setFixedSize(300, 120)
 
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
         self.volume_slider.setValue(50)
         self.mute_button = QtWidgets.QPushButton("Mute")
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
-        self.headerlabel = QtWidgets.QLabel("Hello World")
         self.volume_level_label = QtWidgets.QLabel("Volume: 50%")
+        self.volume_level_label.setAlignment(Qt.AlignCenter)
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
         self.sound_pack = QtWidgets.QComboBox()
         self.sound_pack.addItems(SOUND_PACKS)
@@ -45,13 +45,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.central_widget)
 
         self.layout = QtWidgets.QGridLayout(self.central_widget)
-        self.layout.addWidget(self.headerlabel, 0, 1)
-        self.layout.addWidget(self.volume_level_label, 1, 1)
-        self.layout.addWidget(self.volume_slider, 2, 1)
-        self.layout.addWidget(self.mute_button, 1, 0)
-        self.layout.addWidget(self.test_volume_button, 1, 2)
-        self.layout.addWidget(self.packlabel, 3, 0)
-        self.layout.addWidget(self.sound_pack, 3, 1)
+        self.layout.addWidget(self.volume_level_label, 0, 1, 1, 1)
+        self.layout.addWidget(self.volume_slider, 1, 0, 1, 3)
+        self.layout.addWidget(self.mute_button, 0, 0, 1, 1)
+        self.layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
+        self.layout.addWidget(self.packlabel, 2, 0, 1, 1)
+        self.layout.addWidget(self.sound_pack, 2, 1, 1, 2)
 
         self.media_player = QMediaPlayer()
 

@@ -51,8 +51,8 @@ LOGGING_DICT = {
             "format": "[%(levelname)s] %(filename)s:%(lineno)d; %(message)s",
         },
         "precise": {
-            "format": "%(asctime)s.%(msecs)03dZ %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
-            "datefmt": "%Y-%m-%dT%H:%M:%S",
+            "format": "%(asctime)s.%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
     "handlers": {
