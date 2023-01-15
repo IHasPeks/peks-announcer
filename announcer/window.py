@@ -32,6 +32,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setFixedSize(250, 150)
 
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
+        self.volume_slider.setRange(0, 100)
+        self.volume_slider.setValue(50)
         self.mute_button = QtWidgets.QPushButton("Mute")
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
         self.headerlabel = QtWidgets.QLabel("Hello World")
