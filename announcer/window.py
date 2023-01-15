@@ -35,6 +35,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.volume_slider.setRange(0, 100)
         self.volume_slider.setValue(50)
         self.mute_button = QtWidgets.QPushButton("Mute")
+        self.is_muted = False
+        self.previous_volume = self.volume_slider.value()
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
         self.headerlabel = QtWidgets.QLabel("Hello World")
         self.volume_level_label = QtWidgets.QLabel("Volume: 50%")
@@ -75,9 +77,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.test_volume_button.clicked.connect(self.play_random_sound)
 
     def mute(self):
-        currentVolume = self.media_player.volume()
-        self.media_player.setVolume(0)
-        self.volume_slider.setValue(0)
+        if self.is_muted:
+            self.media_player.setVolume(self.previous_volume)
+            self.volume_slider.setValue(self.previous_volume)
+            self.is_muted = False
+            self.mute_button.setText("Mute")
+        else:
+            self.previous_volume = self.media_player.volume()
+            self.media_player.setVolume(0)
+            self.volume_slider.setValue(0)
+            self.is_muted = True
+            self.mute_button.setText("Unmute")
 
     def update_volume(self):
         self.media_player.setVolume(self.volume_slider.value())
