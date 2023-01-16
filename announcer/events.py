@@ -252,6 +252,34 @@ class Event:
                     and self.player_team == "CHAOS"
                 ):
                     self.new_events.append("EnemyInhibitorRespawned")
+            # Dragon Kill
+            elif event_name == "DragonKill":
+                self.new_events.append("DragonKill")
+            # Ally Dragon Kill
+                if event["DragonKill"] == self.player_team:
+                    self.new_events.append("AllyDragonKill")
+            # Enemy Dragon Kill
+                if event["DragonKill"] == self.player_team:
+                    self.new_events.append("EnemyDragonKill")
+            # Herald Kill
+            elif event_name == "HeraldKill":
+                self.new_events.append("HeraldKill")
+            # Ally Herald Kill
+                if event["HeraldKill"] == self.player_team:
+                    self.new_events.append("AllyHeraldKill")
+            # Enemy Herald Kill
+                if event["HeraldKill"] == self.player_team:
+                    self.new_events.append("EnemyHeraldKill")
+            # Baron Kill
+            elif event_name == "BaronKill":
+                self.new_events.append("BaronKill")
+            # Ally Baron Kill
+                if event["BaronKill"] == self.player_team:
+                    self.new_events.append("AllyBaronKill")
+            # Enemy Baron Kill
+                if event["BaronKill"] == self.player_team:
+                    self.new_events.append("EnemyBaronKill")
+            # TODO : ADD EVENTS FOR STOLEN BARON, DRAGON AND HERALD
             # Minions have spawned.
             elif event_name == "MinionsSpawning":
                 self.new_events.append("MinionsSpawning")
