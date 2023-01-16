@@ -39,6 +39,7 @@ class Event:
         else:
             logger.info("Connected to League Game")
             self.game_data = game_data.json()
+            time.sleep(3)
 
     @property
     def events(self) -> list:
