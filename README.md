@@ -44,32 +44,50 @@ want, a random one will be played during that event.
 
 Directory | Usage
 ---|---
-FirstBlood | When someone gets the first kill in the game
+PlayerFirstBlood | When you get the first kill in the game
 PlayerKill | When you get a kill
 PlayerDeath | When you die
+PlayerDeathFirstBlood | When you die from a first blood
 Executed | When you die without getting killed by an enemy
 AllyAce | When your team gets an Ace
 AllyKill | When your team gets a kill
-AllyDeath | When a teammate dies
+AllyDeath | When your teammate dies
+AllyDeathFirstBlood | When your teammate dies from a first blood
+AllyFirstBlood | When your team gets the first kill in the game
 AllyPentaKill | When your team gets a penta kill
 AllyQuadraKill | When your team gets a quadra kill
 AllyTripleKill | When your team gets a triple kill
 AllyDoubleKill | When your team gets a double kill
+AllyFirstBrick | When your team destroys the first turret
 AllyTurretKill | When your team destroys a turret
 AllyInhibitorKill | When your team destroys an inhibitor
 AllyInhibitorRespawned | When your team's inhibitor respawns
 AllyInhibitorRespawningSoon | When your team's inhibitor will respawn in 30 seconds
+AllyDragonKill | When your team kills the dragon without stealing it
+AllyDragonKillStolen | When your team kills the dragon by stealing it
+AllyHeraldKill | When your team kills the herald without stealing it
+AllyHeraldKillStolen | When your team kills the herald by stealing it
+AllyBaronKill | When your team kills the baron without stealing it
+AllyBaronKillStolen | When your team kills the baron by stealing it
 EnemyAce | When the enemy team gets an ace
 EnemyPentaKill | When the enemy gets a penta kill
 EnemyQuadraKill | When the enemy gets a quadra kill
 EnemyTripleKill | When the enemy gets a quadra kill
 EnemyDoubleKill | When the enemy team gets a double kill
+EnemyFirstBrick | When the enemy team destroys the first turret
 EnemyTurretKill | When the enemy destroys a turret
 EnemyInhibitorKill | When the enemy destroys an inhibitor
 EnemyInhibitorRespawned | When the enemy's inhibitor respawns
 EnemyInhibitorRespawningSoon | When the enemy's inhibitor will respawn in 30 seconds
+EnemyDragonKill | When the enemy team kills the dragon without stealing it
+EnemyDragonKillStolen | When the enemy team kills the dragon by stealing it
+EnemyHeraldKill | When the enemy team kills the herald without stealing it
+EnemyHeraldKillStolen | When the enemy team kills the herald by stealing it
+EnemyBaronKill | When the enemy team kills the baron without stealing it
+EnemyBaronKillStolen | When the enemy team kills the baron by stealing it
 Victory | When you win
 Defeat | When you lose
-Welcome | At the start of the game, about 15 seconds in.
+GameStart | At the start of the game
+Welcome | At the start of the game, about 25 seconds in
 MinionsSpawning | When minions spawn
 MinionsSpawningSoon | When minions will spawn in 30 seconds

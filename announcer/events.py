@@ -32,14 +32,12 @@ class Event:
                 f"https://{self.ip}:{self.port}/{Event.ENDPOINT}",
                 verify=False,
             )
-        except requests.exceptions.ConnectionError as e:
-            # logger.exception(f"Unable to Connect to League Game. {e}")
+        except requests.exceptions.ConnectionError:
             self.game_data = None
             time.sleep(3)
         else:
-            logger.info("Connected to League Game")
+            # logger.info("Connected to League Game")
             self.game_data = game_data.json()
-            time.sleep(3)
 
     @property
     def events(self) -> list:
@@ -61,11 +59,12 @@ class Event:
         self.new_events = []
         self._update_events()
         if not self.game_data:
-            logger.warning("Polling without game data")
+            logger.debug("Not in game")
             return []
         try:
             self.player_name = self.game_data["activePlayer"]["summonerName"]
         except KeyError:
+            logger.debug("In loading screen")
             return []
         self.player_team = ""
         self.team_order_players = []
@@ -111,16 +110,40 @@ class Event:
         # Loop over all new events.
         for event_index in range(self.previous_event_count, self.event_count):
             event = self.events[event_index]
+            logger.info(f"{event}")
             event_name = event["EventName"]
 
+            # We check First Blood through champion kill
+            if event_name == "FirstBlood":
+                pass
+            # We check for First Turret killed through Turret Killed
+            elif event_name == "FirstBrick":
+                pass
+            # We check for Multikill through champion kill
+            elif event_name == "Multikill":
+                pass
+            elif event_name == "GameStart":
+                self.new_events.append("GameStart")
             # Someone got first blood.
-            if (
+            elif (
                 event_name == "ChampionKill"
                 and event_index < self.event_count - 1
                 and self.events[event_index + 1]["EventName"] == "FirstBlood"
             ):
-                event_index += 1
-                self.new_events.append("FirstBlood")
+                # Player got First Blood
+                if event["KillerName"] == self.player_name:
+                    self.new_events.append("PlayerFirstBlood")
+                # Ally got First Blood
+                elif event["KillerName"] in self.ally_team_players:
+                    self.new_events.append("AllyFirstBlood")
+                # Enemy got a First Blood
+                elif event["KillerName"] in self.enemy_team_players:
+                    # Player was killed.
+                    if event["VictimName"] == self.player_name:
+                        self.new_events.append("PlayerDeathFirstBlood")
+                    # Ally was killed.
+                    else:
+                        self.new_events.append("AllyDeathFirstBlood")
             # Someone got a multikill.
             elif (
                 event_name == "ChampionKill"
@@ -177,6 +200,27 @@ class Event:
                 else:
                     self.new_events.append("EnemyAce")
             # A turret was killed.
+            elif (
+                event_name == "TurretKilled"
+                and event_index < self.event_count - 1
+                and self.events[event_index + 1]["EventName"] == "FirstBrick"
+            ):
+                turret_name = event["TurretKilled"]
+                if (
+                    turret_name[7:9] == "T2"
+                    and self.player_team == "ORDER"
+                    or turret_name[7:9] == "T1"
+                    and self.player_team == "CHAOS"
+                ):
+                    self.new_events.append("AllyFirstBrick")
+                # Enemy team got a turret kill.
+                elif (
+                    turret_name[7:9] == "T1"
+                    and self.player_team == "ORDER"
+                    or turret_name[7:9] == "T2"
+                    and self.player_team == "CHAOS"
+                ):
+                    self.new_events.append("EnemyFirstBrick")
             elif event_name == "TurretKilled":
                 turret_name = event["TurretKilled"]
                 # Ally team got a turret kill.
@@ -253,33 +297,48 @@ class Event:
                 ):
                     self.new_events.append("EnemyInhibitorRespawned")
             # Dragon Kill
+            # TODO: add different events based on dragon type killed
             elif event_name == "DragonKill":
-                self.new_events.append("DragonKill")
-            # Ally Dragon Kill
-                if event["DragonKill"] == self.ally_team:
-                    self.new_events.append("AllyDragonKill")
-            # Enemy Dragon Kill
-                if event["DragonKill"] == self.enemy_team:
-                    self.new_events.append("EnemyDragonKill")
+                # Ally Dragon Kill
+                if event["KillerName"] in self.ally_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("AllyDragonKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("AllyDragonKillStolen")
+                # Enemy Dragon Kill
+                elif event["KillerName"] in self.enemy_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("EnemyDragonKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("EnemyDragonKillStolen")
             # Herald Kill
             elif event_name == "HeraldKill":
-                self.new_events.append("HeraldKill")
-            # Ally Herald Kill
-                if event["HeraldKill"] == self.ally_team:
-                    self.new_events.append("AllyHeraldKill")
-            # Enemy Herald Kill
-                if event["HeraldKill"] == self.enemy_team:
-                    self.new_events.append("EnemyHeraldKill")
+                # Ally Herald Kill
+                if event["KillerName"] in self.ally_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("AllyHeraldKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("AllyHeraldKillStolen")
+                # Enemy Herald Kill
+                elif event["KillerName"] in self.enemy_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("EnemyHeraldKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("EnemyHeraldKillStolen")
             # Baron Kill
             elif event_name == "BaronKill":
-                self.new_events.append("BaronKill")
-            # Ally Baron Kill
-                if event["BaronKill"] == self.ally_team:
-                    self.new_events.append("AllyBaronKill")
-            # Enemy Baron Kill
-                if event["BaronKill"] == self.enemy_team:
-                    self.new_events.append("EnemyBaronKill")
-            # TODO : ADD EVENTS FOR STOLEN BARON, DRAGON AND HERALD
+                # Ally Baron Kill
+                if event["KillerName"] in self.ally_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("AllyBaronKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("AllyBaronKillStolen")
+                # Enemy Baron Kill
+                elif event["KillerName"] in self.enemy_team_players:
+                    if event["Stolen"] == "False":
+                        self.new_events.append("EnemyBaronKill")
+                    elif event["Stolen"] == "True":
+                        self.new_events.append("EnemyBaronKillStolen")
             # Minions have spawned.
             elif event_name == "MinionsSpawning":
                 self.new_events.append("MinionsSpawning")
@@ -291,8 +350,10 @@ class Event:
                 # Defeat
                 elif event["Result"] == "Lose":
                     self.new_events.append("Defeat")
+            else:
+                logger.warning(f"Event {event_name} not implemented.\n{event}")
             # TODO: killing streaks
         self.previous_game_time = self.game_time
         self.previous_event_count = self.event_count
-        logger.debug(self.new_events)
+        # logger.debug(self.new_events)
         return self.new_events

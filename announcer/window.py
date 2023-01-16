@@ -45,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sound_pack.addItems(SOUND_PACKS)
         self.sound_label = QtWidgets.QLabel("<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>Get More Soundpacks</a>")
         self.sound_label.setOpenExternalLinks(True)
+        self.sound_label.setAlignment(Qt.AlignCenter)
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
 
@@ -55,7 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
         self.layout.addWidget(self.packlabel, 2, 0, 1, 1)
         self.layout.addWidget(self.sound_pack, 2, 1, 1, 2)
-        self.layout.addWidget(self.sound_label, 3, 1, 1, 2)
+        self.layout.addWidget(self.sound_label, 3, 0, 1, 3)
 
         self.media_player = QMediaPlayer()
         self.media_player.setVolume(50)
@@ -110,7 +111,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.play_event_sound(event)
 
     def play_events_sound(self, events: str):
-        logger.debug(events)
         for event in events.split(";"):
             if not event:
                 break
@@ -123,8 +123,11 @@ class MainWindow(QtWidgets.QMainWindow):
         except IndexError as e:
             logger.exception(e)
             return
+        except FileNotFoundError as e:
+            logger.exception(e)
+            return
         sound_path = os.path.join(event_sounds, sound)
-        logger.debug(sound_path)
+        # logger.debug(sound_path)
         url = QUrl.fromLocalFile(sound_path)
         content = QMediaContent(url)
         self.media_player.setMedia(content)

@@ -76,7 +76,14 @@ LOGGING_DICT = {
             "level": "DEBUG",
             "handlers": ["console", "file"],
             "propagate": "no",
-        }
+        },
+        "requests": {
+            "level": "WARNING",
+        },
+        "urllib3": {
+            "level": "WARNING",
+        },
+
     },
     "root": {
         "level": "DEBUG",
