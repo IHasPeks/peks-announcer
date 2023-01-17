@@ -1,6 +1,8 @@
 import os
 import random
 import logging
+import time
+import typing
 
 from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
@@ -13,24 +15,64 @@ from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 logger = logging.getLogger(__name__)
 
 
+class FIFOMediaPlayer(QMediaPlayer, QObject):
+    def append_events(self, events: str):
+        if not events:
+            return
+        self.sound_pack = events.split(";")[0]
+        self.events.extend(events.split(";")[1:])
+        while self.events:
+            while self.position() != self.duration():
+                continue
+
+            event_sounds = os.path.join(
+                SOUND_PACKS[self.sound_pack],
+                self.events.pop(0),
+            )
+
+            try:
+                sound = random.choice(os.listdir(event_sounds))
+            except IndexError as e:
+                logger.exception(e)
+                return
+            except FileNotFoundError as e:
+                logger.exception(e)
+                return
+            sound_path = os.path.join(event_sounds, sound)
+            url = QUrl.fromLocalFile(sound_path)
+            content = QMediaContent(url)
+            self.setMedia(content)
+            self.play()
+
+            # TODO: Fix race condition
+            time.sleep(0.1)
+
+    def play_event_sound(self):
+        self.events = []
+        self.setVolume(50)
+
+
 class EventPlayer(QObject):
     # finished = pyqtSignal()
-    progress = pyqtSignal(str)
+    events = pyqtSignal(str)
 
     def poll_league(self):
         self.lol_events = Event()
         while True:
             events_in_string = ";".join(self.lol_events.event_polling())
-            self.progress.emit(events_in_string)
+            self.events.emit(events_in_string)
         # self.finished.emit()
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    events = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Peks Announcer")
         self.setFixedSize(300, 120)
 
+        self.t = 0
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
         self.volume_slider.setValue(50)
@@ -63,19 +105,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.sound_label, 3, 0, 1, 3)
         self.layout.addWidget(self.open_pack_button, 3, 2, 1, 1)
 
-        self.media_player = QMediaPlayer()
-        self.media_player.setVolume(50)
+        # Media Player Thread
+        self.media_player = FIFOMediaPlayer()
+        self.media_player_thread = QThread()
+        self.media_player.moveToThread(self.media_player_thread)
 
+        self.media_player_thread.started.connect(self.media_player.play_event_sound)
+        self.media_player_thread.finished.connect(self.media_player_thread.quit)
+        self.media_player_thread.finished.connect(self.media_player_thread.deleteLater)
+        self.events.connect(self.media_player.append_events)
+        # self.media_player.setVolume(50)
+
+        # Event Polling Thread
         self.event_player = EventPlayer()
         self.event_player_thread = QThread()
         self.event_player.moveToThread(self.event_player_thread)
 
         self.event_player_thread.started.connect(self.event_player.poll_league)
-        # self.event_player.finished.connect(self.thread.quit)
-        # self.event_player.finished.connect(self.worker.deleteLater)
+        self.event_player_thread.finished.connect(self.event_player_thread.quit)
         self.event_player_thread.finished.connect(self.event_player_thread.deleteLater)
-        self.event_player.progress.connect(self.play_events_sound)
+        self.event_player.events.connect(self.send_events)
 
+        self.media_player_thread.start()
         self.event_player_thread.start()
 
     def setup_connections(self):
@@ -113,30 +164,16 @@ class MainWindow(QtWidgets.QMainWindow):
         except IndexError as e:
             logger.exception(e)
             return
-        self.play_event_sound(event)
+        self.send_events(event)
 
-    def play_events_sound(self, events: str):
-        for event in events.split(";"):
-            if not event:
-                break
-            self.play_event_sound(event)
-
-    def play_event_sound(self, event: str):
-        event_sounds = os.path.join(SOUND_PACKS[self.sound_pack.currentText()], event)
-        try:
-            sound = random.choice(os.listdir(event_sounds))
-        except IndexError as e:
-            logger.exception(e)
+    def send_events(self, events: str):
+        if not events:
             return
-        except FileNotFoundError as e:
-            logger.exception(e)
-            return
-        sound_path = os.path.join(event_sounds, sound)
-        # logger.debug(sound_path)
-        url = QUrl.fromLocalFile(sound_path)
-        content = QMediaContent(url)
-        self.media_player.setMedia(content)
-        self.media_player.play()
+        events = self.sound_pack.currentText() + ";" + events
+        self.events.emit(events)
 
     def open_appdata(self):
-        os.startfile(SOUNDS_DIR_LOCAL)
+        if os.name == "nt":
+            os.startfile(SOUNDS_DIR_LOCAL)
+        else:
+            logger.warning("Your system if not compatible")
