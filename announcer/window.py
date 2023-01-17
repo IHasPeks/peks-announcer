@@ -21,8 +21,9 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
             return
         self.sound_pack = events.split(";")[0]
         self.events.extend(events.split(";")[1:])
+        logger.debug(f"Events before loop: {self.events}")
         while self.events:
-            while self.position() != self.duration():
+            if self.position() != self.duration():
                 continue
 
             event_sounds = os.path.join(
@@ -42,10 +43,12 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
             url = QUrl.fromLocalFile(sound_path)
             content = QMediaContent(url)
             self.setMedia(content)
+            logger.debug(f"Before play: {url}")
             self.play()
+            logger.debug(f"After play: {url}")
 
             # TODO: Fix race condition
-            time.sleep(0.1)
+            time.sleep(0.25)
 
     def play_event_sound(self):
         self.events = []
@@ -169,6 +172,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if not events:
             return
         events = self.sound_pack.currentText() + ";" + events
+        logger.info(f"Random event: {events} sent")
         self.events.emit(events)
 
     def open_appdata(self):
