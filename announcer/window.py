@@ -1,8 +1,9 @@
 import os
 import random
 import logging
+from tkinter.tix import COLUMN
 
-from .constants import SOUND_PACKS
+from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
 
 from PyQt5 import QtWidgets
@@ -43,20 +44,73 @@ class MainWindow(QtWidgets.QMainWindow):
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
         self.sound_pack = QtWidgets.QComboBox()
         self.sound_pack.addItems(SOUND_PACKS)
-        self.sound_label = QtWidgets.QLabel("<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>Get More Soundpacks</a>")
+        self.sound_label = QtWidgets.QLabel(
+            "<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>More Soundpacks</a>"
+        )
         self.sound_label.setOpenExternalLinks(True)
+        self.open_pack_button = QtWidgets.QPushButton("Open Pack Files")
+        self.open_pack_button.clicked.connect(self.open_appdata)
         self.sound_label.setAlignment(Qt.AlignCenter)
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
 
         self.layout = QtWidgets.QGridLayout(self.central_widget)
-        self.layout.addWidget(self.volume_level_label, 0, 1, 1, 1)
-        self.layout.addWidget(self.volume_slider, 1, 0, 1, 3)
-        self.layout.addWidget(self.mute_button, 0, 0, 1, 1)
-        self.layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
-        self.layout.addWidget(self.packlabel, 2, 0, 1, 1)
-        self.layout.addWidget(self.sound_pack, 2, 1, 1, 2)
-        self.layout.addWidget(self.sound_label, 3, 0, 1, 3)
+        self.layout.addWidget(
+            self.volume_level_label,
+            row=0,
+            column=1,
+            rowSpan=1,
+            columnSpan=1,
+        )
+        self.layout.addWidget(
+            self.volume_slider,
+            row=1,
+            column=0,
+            rowSpan=1,
+            columnSpan=3,
+        )
+        self.layout.addWidget(
+            self.mute_button,
+            row=0,
+            column=0,
+            rowspan=1,
+            columnSpan=1,
+        )
+        self.layout.addWidget(
+            self.test_volume_button,
+            row=0,
+            column=2,
+            rowSpan=1,
+            columnSpan=1,
+        )
+        self.layout.addWidget(
+            self.packlabel,
+            row=2,
+            column=0,
+            rowSpan=1,
+            columnSpan=1,
+        )
+        self.layout.addWidget(
+            self.sound_pack,
+            row=2,
+            column=1,
+            rowSpan=1,
+            columnSpan=2,
+        )
+        self.layout.addWidget(
+            self.sound_label,
+            row=3,
+            column=0,
+            rowSpan=1,
+            columnSpan=3,
+        )
+        self.layout.addWidget(
+            self.open_pack_button,
+            row=3,
+            column=2,
+            rowSpan=1,
+            columnSpan=1,
+        )
 
         self.media_player = QMediaPlayer()
         self.media_player.setVolume(50)
@@ -133,3 +187,5 @@ class MainWindow(QtWidgets.QMainWindow):
         self.media_player.setMedia(content)
         self.media_player.play()
 
+    def open_appdata(self):
+        os.startfile(SOUNDS_DIR_LOCAL)
