@@ -93,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.sound_link.setOpenExternalLinks(True)
         self.open_pack_button = QtWidgets.QPushButton("Open Packs")
-        self.open_pack_button.clicked.connect(self.open_appdata)
+        self.open_pack_button.clicked.connect(self.open_local_sounds_dir)
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
 
@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info(f"Random event: {events} sent")
         self.events.emit(events)
 
-    def open_appdata(self):
+    def open_local_sounds_dir(self):
         if os.name == "nt":
             os.startfile(SOUNDS_DIR_LOCAL)
         else:
