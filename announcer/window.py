@@ -85,13 +85,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
         self.sound_pack = QtWidgets.QComboBox()
         self.sound_pack.addItems(SOUND_PACKS)
-        self.sound_label = QtWidgets.QLabel(
+        self.sound_link = QtWidgets.QLabel(
             "<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>More Soundpacks</a>"
         )
-        self.sound_label.setOpenExternalLinks(True)
-        self.open_pack_button = QtWidgets.QPushButton("Open Pack Files")
+        self.sound_link.setOpenExternalLinks(True)
+        self.open_pack_button = QtWidgets.QPushButton("Open Packs")
         self.open_pack_button.clicked.connect(self.open_appdata)
-        self.sound_label.setAlignment(Qt.AlignCenter)
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
 
@@ -102,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
         self.layout.addWidget(self.packlabel, 2, 0, 1, 1)
         self.layout.addWidget(self.sound_pack, 2, 1, 1, 2)
-        self.layout.addWidget(self.sound_label, 3, 0, 1, 3)
+        self.layout.addWidget(self.sound_link, 3, 0, 1, 2)
         self.layout.addWidget(self.open_pack_button, 3, 2, 1, 1)
 
         # Media Player Thread
