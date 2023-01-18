@@ -1,4 +1,6 @@
+import sys
 import os
+import subprocess
 import random
 import logging
 import time
@@ -176,7 +178,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.events.emit(events)
 
     def open_local_sounds_dir(self):
-        if os.name == "nt":
+        if sys.platform == "win32":
             os.startfile(SOUNDS_DIR_LOCAL)
         else:
-            logger.warning("Your system if not compatible")
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, SOUNDS_DIR_LOCAL])
