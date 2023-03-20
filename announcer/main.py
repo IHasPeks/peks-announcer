@@ -10,14 +10,16 @@ from PyQt5 import QtWidgets
 logging.config.dictConfig(LOGGING_DICT)
 logger = logging.getLogger(__name__)
 
-
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    app.setApplicationName("League Announcer")
+    app.setApplicationVersion("1.0.0")
+    
     window = MainWindow()
     window.setup_connections()
     window.show()
+    
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()
