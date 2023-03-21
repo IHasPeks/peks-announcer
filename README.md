@@ -38,8 +38,18 @@ The program comes bundled with a sound pack. If you want to create your own
 you will need to place them in `~/.config/lol-announcer/sounds/your_sound_pack`
 on linux, and on windows in `%APPDATA\lol-announcer\sounds\your_sound_pack`.
 
-Each sound pack should have the following directories and each one should
-contain at least one audio file. You may add as many audio files as you
+Each sound pack should contain a config.json with the following data.
+```json
+{
+    "name": "Pack Name",
+    "version": "1.0.0",
+    "author": "Pack Author",
+    "description": "Example Pack Description"
+}
+```
+you can find an example.json file in the root directory of the repository or by clicking here 
+the config.json should be placed with the following directories below
+and each one should contain at least one audio file. You may add as many audio files as you
 want, a random one will be played during that event.
 
 Directory | Usage
