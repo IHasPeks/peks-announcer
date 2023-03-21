@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 DIR_NAME = "lol-announcer"
 
@@ -28,20 +29,48 @@ else:
     print("Your OS is not supported.", file=sys.stderr)
     sys.exit(1)
 
-
 os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(SOUNDS_DIR_LOCAL, exist_ok=True)
 SOUNDS_DIR_GLOBAL = os.path.join(os.path.dirname(__file__), "sounds/")
 
+def load_json_file(file_path):
+    with open(file_path, "r") as json_file:
+        data = json.load(json_file)
+    return data
 
 SOUND_PACKS = dict()
 
 for dir in os.listdir(SOUNDS_DIR_GLOBAL):
-    SOUND_PACKS[dir] = os.path.join(SOUNDS_DIR_GLOBAL, dir)
+    json_file_path = os.path.join(SOUNDS_DIR_GLOBAL, dir, "config.json")
+    
+    if os.path.exists(json_file_path):
+        json_data = load_json_file(json_file_path)
+        pack_name = json_data.get("name", dir)
+        pack_description = json_data.get("description", "")
+        pack_author = json_data.get("author", "")
+        pack_version = json_data.get("version", "")
+        SOUND_PACKS[pack_name] = {
+            "path": os.path.join(SOUNDS_DIR_GLOBAL, dir),
+            "description": pack_description,
+            "author": pack_author,
+            "version": pack_version
+        }
 
 for dir in os.listdir(SOUNDS_DIR_LOCAL):
-    SOUND_PACKS[dir] = os.path.join(SOUNDS_DIR_LOCAL, dir)
-
+    json_file_path = os.path.join(SOUNDS_DIR_LOCAL, dir, "config.json")
+    
+    if os.path.exists(json_file_path):
+        json_data = load_json_file(json_file_path)
+        pack_name = json_data.get("name", dir)
+        pack_description = json_data.get("description", "")
+        pack_author = json_data.get("author", "")
+        pack_version = json_data.get("version", "")
+        SOUND_PACKS[pack_name] = {
+            "path": os.path.join(SOUNDS_DIR_LOCAL, dir),
+            "description": pack_description,
+            "author": pack_author,
+            "version": pack_version
+        }
 
 LOGS_FILE = os.path.join(LOGS_DIR, "announcer.log")
 LOGGING_DICT = {

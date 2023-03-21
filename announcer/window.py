@@ -28,9 +28,9 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
                 continue
 
             event_sounds = os.path.join(
-                SOUND_PACKS[self.sound_pack],
+                SOUND_PACKS[self.sound_pack]["path"],
                 self.events.pop(0),
-            )
+)
 
             try:
                 sound = random.choice(os.listdir(event_sounds))
@@ -73,7 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setFixedSize(300, 120)
+        self.setFixedSize(350, 175)
 
         self.t = 0
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
@@ -86,8 +86,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.volume_level_label = QtWidgets.QLabel("Volume: 50%")
         self.volume_level_label.setAlignment(Qt.AlignCenter)
         self.packlabel = QtWidgets.QLabel("Sound Pack:")
+        self.pack_info = QtWidgets.QLabel("")
+        self.pack_info.setWordWrap(True)
+        self.pack_info.setAlignment(Qt.AlignRight)
         self.sound_pack = QtWidgets.QComboBox()
-        self.sound_pack.addItems(SOUND_PACKS)
+        self.sound_pack.addItems(list(SOUND_PACKS.keys()))
         self.sound_link = QtWidgets.QLabel(
             "<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>More Soundpacks</a>"
         )
@@ -96,6 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_pack_button.clicked.connect(self.open_local_sounds_dir)
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
+        self.update_description()
 
         self.grid_layout = QtWidgets.QGridLayout(self.central_widget)
         self.grid_layout.addWidget(self.volume_level_label, 0, 1, 1, 1)
@@ -104,8 +108,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.grid_layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
         self.grid_layout.addWidget(self.packlabel, 2, 0, 1, 1)
         self.grid_layout.addWidget(self.sound_pack, 2, 1, 1, 2)
-        self.grid_layout.addWidget(self.sound_link, 3, 0, 1, 2)
-        self.grid_layout.addWidget(self.open_pack_button, 3, 2, 1, 1)
+        self.grid_layout.addWidget(self.pack_info, 3, 1, 1, 2)
+        self.grid_layout.addWidget(self.sound_link, 4, 0, 1, 2)
+        self.grid_layout.addWidget(self.open_pack_button, 4, 2, 1, 1)
 
         # Media Player Thread
         self.media_player = FIFOMediaPlayer()
@@ -136,6 +141,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.volume_slider.valueChanged.connect(self.update_volume_level)
         self.mute_button.clicked.connect(self.toggle_mute)
         self.test_volume_button.clicked.connect(self.play_random_sound)
+        self.sound_pack.currentIndexChanged.connect(self.update_description)
 
     @pyqtSlot()
     def toggle_mute(self):
@@ -162,7 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def play_random_sound(self):
-        sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]
+        sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]["path"]
         events = os.listdir(sound_pack_dir)
         try:
             event = random.choice(events)
@@ -181,9 +187,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.events.emit(events)
 
     @pyqtSlot()
+    def update_description(self):
+        pack_key = self.sound_pack.currentText()
+        pack_description = SOUND_PACKS[pack_key]['description']
+        self.pack_info.setText(pack_description)
+
+
+
+    @pyqtSlot()
     def open_local_sounds_dir(self):
         if sys.platform == "win32":
             os.startfile(SOUNDS_DIR_LOCAL)
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([opener, SOUNDS_DIR_LOCAL])
+
