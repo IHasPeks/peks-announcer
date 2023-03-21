@@ -4,7 +4,6 @@ import subprocess
 import random
 import logging
 import time
-import typing
 
 from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
@@ -14,7 +13,6 @@ from PyQt5.QtCore import QObject, QThread, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 
 logger = logging.getLogger(__name__)
-
 
 class FIFOMediaPlayer(QMediaPlayer, QObject):
     def append_events(self, events: str):
@@ -55,7 +53,6 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
         self.events = []
         self.setVolume(50)
 
-
 class EventPlayer(QObject):
     # finished = pyqtSignal()
     events = pyqtSignal(str)
@@ -67,14 +64,12 @@ class EventPlayer(QObject):
             self.events.emit(events_in_string)
         # self.finished.emit()
 
-
 class MainWindow(QtWidgets.QMainWindow):
     events = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self.setFixedSize(350, 175)
-
         self.t = 0
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
@@ -192,8 +187,6 @@ class MainWindow(QtWidgets.QMainWindow):
         pack_description = SOUND_PACKS[pack_key]['description']
         self.pack_info.setText(pack_description)
 
-
-
     @pyqtSlot()
     def open_local_sounds_dir(self):
         if sys.platform == "win32":
@@ -201,4 +194,3 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([opener, SOUNDS_DIR_LOCAL])
-
