@@ -10,9 +10,8 @@ from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QObject, QThread, QUrl, Qt, pyqtSignal
+from PyQt5.QtCore import QObject, QThread, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +73,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Peks Announcer")
         self.setFixedSize(300, 120)
 
         self.t = 0
@@ -136,11 +134,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def setup_connections(self):
         self.volume_slider.valueChanged.connect(self.update_volume)
         self.volume_slider.valueChanged.connect(self.update_volume_level)
-
-        self.mute_button.clicked.connect(self.mute)
+        self.mute_button.clicked.connect(self.toggle_mute)
         self.test_volume_button.clicked.connect(self.play_random_sound)
 
-    def mute(self):
+    @pyqtSlot()
+    def toggle_mute(self):
         if self.is_muted:
             self.media_player.setVolume(self.previous_volume)
             self.volume_slider.setValue(self.previous_volume)
@@ -153,13 +151,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.is_muted = True
             self.mute_button.setText("Unmute")
 
+    @pyqtSlot()
     def update_volume(self):
         self.media_player.setVolume(self.volume_slider.value())
 
+    @pyqtSlot()
     def update_volume_level(self):
         volume_level = self.volume_slider.value()
         self.volume_level_label.setText(f"Volume: {volume_level}%")
 
+    @pyqtSlot()
     def play_random_sound(self):
         sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]
         events = os.listdir(sound_pack_dir)
@@ -170,13 +171,16 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.send_events(event)
 
+    @pyqtSlot(str)
     def send_events(self, events: str):
         if not events:
             return
         events = self.sound_pack.currentText() + ";" + events
-        logger.info(f"Random event: {events} sent")
+        logger.info
+        (f"Random event: {events} sent")
         self.events.emit(events)
 
+    @pyqtSlot()
     def open_local_sounds_dir(self):
         if sys.platform == "win32":
             os.startfile(SOUNDS_DIR_LOCAL)
