@@ -24,12 +24,10 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
         while self.events:
             if self.position() != self.duration():
                 continue
-
             event_sounds = os.path.join(
                 SOUND_PACKS[self.sound_pack]["path"],
                 self.events.pop(0),
 )
-
             try:
                 sound = random.choice(os.listdir(event_sounds))
             except IndexError as e:
