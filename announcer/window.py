@@ -9,12 +9,14 @@ from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
 
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QObject, QThread, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 
 logger = logging.getLogger(__name__)
 
 class FIFOMediaPlayer(QMediaPlayer, QObject):
+    error_occurred = pyqtSignal(str)
     def append_events(self, events: str):
         if not events:
             return
@@ -27,14 +29,16 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
             event_sounds = os.path.join(
                 SOUND_PACKS[self.sound_pack]["path"],
                 self.events.pop(0),
-)
+            )
             try:
                 sound = random.choice(os.listdir(event_sounds))
             except IndexError as e:
                 logger.exception(e)
-                return
+                self.error_occurred.emit("No sound files found in the specified directory. Skipping this event.")
+                continue
             except FileNotFoundError as e:
                 logger.exception(e)
+                self.error_occurred.emit("The specified directory was not found.")
                 return
             sound_path = os.path.join(event_sounds, sound)
             url = QUrl.fromLocalFile(sound_path)
@@ -46,6 +50,7 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
 
             # TODO: Fix race condition
             time.sleep(0.25)
+
 
     def play_event_sound(self):
         self.events = []
@@ -135,6 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mute_button.clicked.connect(self.toggle_mute)
         self.test_volume_button.clicked.connect(self.play_random_sound)
         self.sound_pack.currentIndexChanged.connect(self.update_description)
+        self.media_player.error_occurred.connect(self.show_error_message)
 
     @pyqtSlot()
     def toggle_mute(self):
@@ -192,3 +198,12 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([opener, SOUNDS_DIR_LOCAL])
+
+    @pyqtSlot(str)
+    def show_error_message(self, message: str):
+        error_dialog = QMessageBox(self)
+        error_dialog.setIcon(QMessageBox.Critical)
+        error_dialog.setWindowTitle("Error")
+        error_dialog.setText("An error occurred:")
+        error_dialog.setInformativeText(message)
+        error_dialog.exec_()
