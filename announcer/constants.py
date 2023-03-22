@@ -34,43 +34,41 @@ os.makedirs(SOUNDS_DIR_LOCAL, exist_ok=True)
 SOUNDS_DIR_GLOBAL = os.path.join(os.path.dirname(__file__), "sounds/")
 
 def load_json_file(file_path):
-    with open(file_path, "r") as json_file:
-        data = json.load(json_file)
-    return data
+    try:
+        with open(file_path, "r") as json_file:
+            data = json.load(json_file)
+        return data
+    except Exception as e:
+        print(f"Error loading {file_path}: {e}", file=sys.stderr)
+        return None
 
 SOUND_PACKS = dict()
 
-for dir in os.listdir(SOUNDS_DIR_GLOBAL):
-    json_file_path = os.path.join(SOUNDS_DIR_GLOBAL, dir, "config.json")
-    
-    if os.path.exists(json_file_path):
-        json_data = load_json_file(json_file_path)
-        pack_name = json_data.get("name", dir)
-        pack_description = json_data.get("description", "")
-        pack_author = json_data.get("author", "")
-        pack_version = json_data.get("version", "")
-        SOUND_PACKS[pack_name] = {
-            "path": os.path.join(SOUNDS_DIR_GLOBAL, dir),
-            "description": pack_description,
-            "author": pack_author,
-            "version": pack_version
-        }
+def process_sound_directory(sound_directory, is_global):
+    for dir in os.listdir(sound_directory):
+        json_file_path = os.path.join(sound_directory, dir, "config.json")
 
-for dir in os.listdir(SOUNDS_DIR_LOCAL):
-    json_file_path = os.path.join(SOUNDS_DIR_LOCAL, dir, "config.json")
-    
-    if os.path.exists(json_file_path):
-        json_data = load_json_file(json_file_path)
-        pack_name = json_data.get("name", dir)
-        pack_description = json_data.get("description", "")
-        pack_author = json_data.get("author", "")
-        pack_version = json_data.get("version", "")
-        SOUND_PACKS[pack_name] = {
-            "path": os.path.join(SOUNDS_DIR_LOCAL, dir),
-            "description": pack_description,
-            "author": pack_author,
-            "version": pack_version
-        }
+        if os.path.exists(json_file_path):
+            json_data = load_json_file(json_file_path)
+            if json_data is not None:
+                try:
+                    pack_name = json_data["name"]
+                    pack_description = json_data.get("description", "")
+                    pack_author = json_data.get("author", "")
+                    pack_version = json_data.get("version", "")
+                    SOUND_PACKS[pack_name] = {
+                        "path": os.path.join(sound_directory, dir),
+                        "description": pack_description,
+                        "author": pack_author,
+                        "version": pack_version
+                    }
+                except KeyError as e:
+                    print(f"Error in {json_file_path}: Missing key '{e}'", file=sys.stderr)
+            else:
+                print(f"Skipping sound pack in {dir} due to an error in its config.json file", file=sys.stderr)
+
+process_sound_directory(SOUNDS_DIR_GLOBAL, True)
+process_sound_directory(SOUNDS_DIR_LOCAL, False)
 
 LOGS_FILE = os.path.join(LOGS_DIR, "announcer.log")
 LOGGING_DICT = {
