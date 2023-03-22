@@ -169,6 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def play_random_sound(self):
         sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]["path"]
         events = os.listdir(sound_pack_dir)
+        events = list(filter(lambda x: os.path.isdir(x), events))
         try:
             event = random.choice(events)
         except IndexError as e:
