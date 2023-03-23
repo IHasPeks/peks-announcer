@@ -33,6 +33,7 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(SOUNDS_DIR_LOCAL, exist_ok=True)
 SOUNDS_DIR_GLOBAL = os.path.join(os.path.dirname(__file__), "sounds/")
 
+
 def load_json_file(file_path):
     try:
         with open(file_path, "r") as json_file:
@@ -42,7 +43,9 @@ def load_json_file(file_path):
         print(f"Error loading {file_path}: {e}", file=sys.stderr)
         return None
 
+
 SOUND_PACKS = dict()
+
 
 def process_sound_directory(sound_directory, is_global):
     for dir in os.listdir(sound_directory):
@@ -60,12 +63,18 @@ def process_sound_directory(sound_directory, is_global):
                         "path": os.path.join(sound_directory, dir),
                         "description": pack_description,
                         "author": pack_author,
-                        "version": pack_version
+                        "version": pack_version,
                     }
                 except KeyError as e:
-                    print(f"Error in {json_file_path}: Missing key '{e}'", file=sys.stderr)
+                    print(
+                        f"Error in {json_file_path}: Missing key '{e}'", file=sys.stderr
+                    )
             else:
-                print(f"Skipping sound pack in {dir} due to an error in its config.json file", file=sys.stderr)
+                print(
+                    f"Skipping sound pack in {dir} due to an error in its config.json file",
+                    file=sys.stderr,
+                )
+
 
 process_sound_directory(SOUNDS_DIR_GLOBAL, True)
 process_sound_directory(SOUNDS_DIR_LOCAL, False)

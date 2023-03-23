@@ -4,9 +4,11 @@ from pydub.utils import mediainfo
 
 from .constants import SOUNDS_DIR_LOCAL
 
+
 def normalize_audio(audio, target_dBFS):
     change_in_dBFS = target_dBFS - audio.dBFS
     return audio.apply_gain(change_in_dBFS)
+
 
 def processau(directory, target_dBFS=-3.5, progress_callback=None, force=True):
     file_count = 0
@@ -23,6 +25,7 @@ def processau(directory, target_dBFS=-3.5, progress_callback=None, force=True):
                 file_count += 1
                 if progress_callback:
                     progress_callback(file_count, file)
+
 
 if __name__ == "__main__":
     directory = os.path.join(SOUNDS_DIR_LOCAL)

@@ -18,8 +18,10 @@ from functools import partial
 
 logger = logging.getLogger(__name__)
 
+
 class FIFOMediaPlayer(QMediaPlayer, QObject):
     error_occurred = pyqtSignal(str)
+
     def append_events(self, events: str):
         if not events:
             return
@@ -37,7 +39,9 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
                 sound = random.choice(os.listdir(event_sounds))
             except IndexError as e:
                 logger.exception(e)
-                self.error_occurred.emit("No sound files found in the specified directory. Skipping this event.")
+                self.error_occurred.emit(
+                    "No sound files found in the specified directory. Skipping this event."
+                )
                 continue
             except FileNotFoundError as e:
                 logger.exception(e)
@@ -54,10 +58,10 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
             # TODO: Fix race condition
             time.sleep(0.25)
 
-
     def play_event_sound(self):
         self.events = []
         self.setVolume(50)
+
 
 class EventPlayer(QObject):
     # finished = pyqtSignal()
@@ -69,6 +73,7 @@ class EventPlayer(QObject):
             events_in_string = ";".join(self.lol_events.event_polling())
             self.events.emit(events_in_string)
         # self.finished.emit()
+
 
 class MainWindow(QtWidgets.QMainWindow):
     events = pyqtSignal(str)
@@ -99,7 +104,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_button = QtWidgets.QPushButton("⚙️")
 
         ## TODO: This button when resized makes the rest of the UI act funky.
-        #self.settings_button.setFixedSize(24,24)
+        # self.settings_button.setFixedSize(24,24)
 
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
@@ -160,14 +165,12 @@ class MainWindow(QtWidgets.QMainWindow):
         makepack = QtWidgets.QPushButton("Create New Pack", settings_dialog)
         normalize = QtWidgets.QPushButton("Process All Sounds", settings_dialog)
         button_close = QtWidgets.QPushButton("< Back", settings_dialog)
-        
+
         open_pack_button.clicked.connect(self.open_local_sounds_dir)
         button_close.clicked.connect(settings_dialog.close)
         makepack.clicked.connect(self.create_sound_pack_structure)
         normalize.clicked.connect(self.normalizeau)
 
-
-        
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
         vbox.addWidget(open_pack_button)
         vbox.addWidget(makepack)
@@ -203,7 +206,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def play_random_sound(self):
         sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]["path"]
         events = os.listdir(sound_pack_dir)
-        events = list(filter(lambda x: os.path.isdir(os.path.join(sound_pack_dir, x)), events))
+        events = list(
+            filter(lambda x: os.path.isdir(os.path.join(sound_pack_dir, x)), events)
+        )
         try:
             event = random.choice(events)
         except IndexError as e:
@@ -223,7 +228,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def update_description(self):
         pack_key = self.sound_pack.currentText()
-        pack_description = SOUND_PACKS[pack_key]['description']
+        pack_description = SOUND_PACKS[pack_key]["description"]
         self.pack_info.setText(pack_description)
 
     @pyqtSlot()
@@ -316,9 +321,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def normalizeau(self):
         sound_packs_directory = os.path.join(SOUNDS_DIR_LOCAL)
 
-        total_files = sum([len(files) for r, d, files in os.walk(sound_packs_directory)])
+        total_files = sum(
+            [len(files) for r, d, files in os.walk(sound_packs_directory)]
+        )
 
-        self.progress_dialog = QtWidgets.QProgressDialog("Processing...", "Cancel", 0, total_files, self)
+        self.progress_dialog = QtWidgets.QProgressDialog(
+            "Processing...", "Cancel", 0, total_files, self
+        )
         self.progress_dialog.setWindowTitle("Normalizing Sound Files")
         self.progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
         self.progress_dialog.setAutoClose(False)
@@ -327,10 +336,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.progress_dialog.canceled.connect(self.progress_dialog.close)
 
-        processau(sound_packs_directory, progress_callback=partial(self.updatebar, total_files))
+        processau(
+            sound_packs_directory,
+            progress_callback=partial(self.updatebar, total_files),
+        )
 
         self.progress_dialog.close()
-        QtWidgets.QMessageBox.information(self, "Success", "All sound files have been processed and are ready for use.")
+        QtWidgets.QMessageBox.information(
+            self,
+            "Success",
+            "All sound files have been processed and are ready for use.",
+        )
 
     @pyqtSlot()
     def updatebar(self, total_files, file_count, filename):
@@ -340,4 +356,3 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot(int, int)
     def update_progress_bar(self, current, total):
         self.progress_dialog.setValue(current)
-        
