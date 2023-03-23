@@ -34,16 +34,17 @@ announcer, so that you don't get any overlapping sounds.
 
 ## Create Sound Packs
 
-The program comes bundled with a few sound packs. If you want to create your own.
-you can use the creation tools in the app to generate a pack structure with everything
-you need. if you prefer to do this manually. read on.
+The program comes bundled with a few sound packs. If you want to create your own,
+You can use the creation tools in the app to generate a pack structure with everything
+you need. if you prefer to do this manually, Keep reading for a short tutorial.
 
 Sound Packs need to be placed in the following folders. these change depending
 on your platform of choice.
 Linux: `~/.config/lol-announcer/sounds/your_sound_pack`
+
 Windows: `%APPDATA\lol-announcer\sounds\your_sound_pack`.
 
-All sounds in a soundpack should be processed. there is an option in app to do this for you.
+**All sounds in a soundpack should be processed. there is an option in app to do this for you.**
 
 Each sound pack should contain a config.json with the following data.
 ```json
@@ -54,7 +55,7 @@ Each sound pack should contain a config.json with the following data.
     "description": "Example Pack Description"
 }
 ```
-*note that the version attribute is optional and not required. it is for internal use only*
+*Note that the version attribute is optional and not required. it is for internal use only*
 
 you can find an example.json file in the root directory of the repository or by clicking [here](https://github.com/IHasPeks/peks-announcer/blob/master/exampleconfig.json "here.") The config.json should be placed with the following directories below
 and each one should contain at least one audio file. You may add as many audio files as you
