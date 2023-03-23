@@ -93,8 +93,6 @@ class MainWindow(QtWidgets.QMainWindow):
             "<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>More Soundpacks</a>"
         )
         self.sound_link.setOpenExternalLinks(True)
-        self.open_pack_button = QtWidgets.QPushButton("Open Packs")
-        self.open_pack_button.clicked.connect(self.open_local_sounds_dir)
         self.settings_button = QtWidgets.QPushButton("⚙️")
 
         ## TODO: This button when resized makes the rest of the UI act funky.
@@ -113,8 +111,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.grid_layout.addWidget(self.sound_pack, 2, 1, 1, 2)
         self.grid_layout.addWidget(self.pack_info, 3, 1, 2, 2)
         self.grid_layout.addWidget(self.sound_link, 4, 0, 1, 1)
-        self.grid_layout.addWidget(self.open_pack_button, 5, 2, 1, 1)
-        self.grid_layout.addWidget(self.settings_button, 5, 0, 1, 1)
+        self.grid_layout.addWidget(self.settings_button, 4, 2, 1, 1)
 
         # Media Player Thread
         self.media_player = FIFOMediaPlayer()
