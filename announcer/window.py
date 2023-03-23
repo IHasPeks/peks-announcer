@@ -25,7 +25,9 @@ class FIFOMediaPlayer(QMediaPlayer, QObject):
     def append_events(self, events: str):
         if not events:
             return
-        self.sound_pack = events.split(";")[0]
+        formatted_pack_key = events.split(";")[0]
+        pack_key = formatted_pack_key.split(' - ')[0]  # Extract the pack name
+        self.sound_pack = pack_key
         self.events.extend(events.split(";")[1:])
         logger.debug(f"Events before loop: {self.events}")
         while self.events:
@@ -80,7 +82,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setFixedSize(350, 175)
+        self.setFixedSize(350, 150)
         self.t = 0
         self.volume_slider = QtWidgets.QSlider(Qt.Horizontal)
         self.volume_slider.setRange(0, 100)
@@ -91,12 +93,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.test_volume_button = QtWidgets.QPushButton("Test sound")
         self.volume_level_label = QtWidgets.QLabel("Volume: 50%")
         self.volume_level_label.setAlignment(Qt.AlignCenter)
-        self.packlabel = QtWidgets.QLabel("Sound Pack:")
+        self.pack_label = QtWidgets.QLabel("Sound Pack:")
         self.pack_info = QtWidgets.QLabel("")
         self.pack_info.setWordWrap(True)
-        self.pack_info.setAlignment(Qt.AlignRight)
+        self.pack_info.setAlignment(Qt.AlignLeft)
         self.sound_pack = QtWidgets.QComboBox()
-        self.sound_pack.addItems(list(SOUND_PACKS.keys()))
+        formatted_sound_pack_names = [
+    f"{pack_name} - {pack_info['author']}" for pack_name, pack_info in SOUND_PACKS.items()
+]
+        self.sound_pack.addItems(formatted_sound_pack_names)
+
+        self.refresh_button = QtWidgets.QPushButton("⟳")
+        self.refresh_button.setFixedSize(24, 24)
         self.sound_link = QtWidgets.QLabel(
             "<a href='https://github.com/IHasPeks/peks-announcer#create-sound-packs'>More Soundpacks</a>"
         )
@@ -104,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_button = QtWidgets.QPushButton("⚙️")
 
         ## TODO: This button when resized makes the rest of the UI act funky.
-        # self.settings_button.setFixedSize(24,24)
+        self.settings_button.setFixedSize(24,24)
 
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
@@ -112,14 +120,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.grid_layout = QtWidgets.QGridLayout(self.central_widget)
         self.grid_layout.addWidget(self.volume_level_label, 0, 1, 1, 1)
-        self.grid_layout.addWidget(self.volume_slider, 1, 0, 1, 3)
+        self.grid_layout.addWidget(self.volume_slider, 1, 0, 1, 4)
         self.grid_layout.addWidget(self.mute_button, 0, 0, 1, 1)
         self.grid_layout.addWidget(self.test_volume_button, 0, 2, 1, 1)
-        self.grid_layout.addWidget(self.packlabel, 2, 0, 1, 1)
+        self.grid_layout.addWidget(self.pack_label, 2, 0, 1, 1)
+        self.grid_layout.addWidget(self.refresh_button, 2, 3, 1, 1)
         self.grid_layout.addWidget(self.sound_pack, 2, 1, 1, 2)
         self.grid_layout.addWidget(self.pack_info, 3, 1, 2, 2)
-        self.grid_layout.addWidget(self.sound_link, 4, 0, 1, 1)
-        self.grid_layout.addWidget(self.settings_button, 4, 2, 1, 1)
+        self.grid_layout.addWidget(self.sound_link, 3, 0, 1, 1)
+        self.grid_layout.addWidget(self.settings_button, 3, 3, 1, 1)
 
         # Media Player Thread
         self.media_player = FIFOMediaPlayer()
@@ -153,6 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.test_volume_button.clicked.connect(self.play_random_sound)
         self.settings_button.clicked.connect(self.show_settings_dialog)
         self.sound_pack.currentIndexChanged.connect(self.update_description)
+        ## Refreshing NYI
+        #self.refresh_button.clicked.connect(self.refresh)
         self.media_player.error_occurred.connect(self.show_error_message)
 
     @pyqtSlot()
@@ -204,7 +215,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def play_random_sound(self):
-        sound_pack_dir = SOUND_PACKS[self.sound_pack.currentText()]["path"]
+        formatted_pack_key = self.sound_pack.currentText()
+        pack_key = formatted_pack_key.split(' - ')[0]
+        sound_pack_dir = SOUND_PACKS[pack_key]["path"]
         events = os.listdir(sound_pack_dir)
         events = list(
             filter(lambda x: os.path.isdir(os.path.join(sound_pack_dir, x)), events)
@@ -227,9 +240,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def update_description(self):
-        pack_key = self.sound_pack.currentText()
+        formatted_pack_key = self.sound_pack.currentText()
+        pack_key = formatted_pack_key.split(' - ')[0]  # Extract the pack name
         pack_description = SOUND_PACKS[pack_key]["description"]
         self.pack_info.setText(pack_description)
+
 
     @pyqtSlot()
     def open_local_sounds_dir(self):
@@ -241,15 +256,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def create_sound_pack_structure(self):
-        pack_name = "New Soundpack (CHANGE ME)"
+        pack_name = "Template Pack"
         pack_directory = os.path.join(SOUNDS_DIR_LOCAL, pack_name)
         os.makedirs(pack_directory, exist_ok=False)
 
         config = {
             "name": pack_name,
             "version": "1.0.0",
-            "author": "Your name here",
-            "description": "Example Pack Description",
+            "author": "Atheridis/OfficiallySp",
+            "description": "THIS PACK CONTAINS NO SOUND FILES. This is for use as a template to make your own soundpacks",
         }
 
         with open(os.path.join(pack_directory, "config.json"), "w") as config_file:
