@@ -94,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.sound_link.setOpenExternalLinks(True)
         self.open_pack_button = QtWidgets.QPushButton("Open Packs")
-        
+        self.open_pack_button.clicked.connect(self.open_local_sounds_dir)
         self.settings_button = QtWidgets.QPushButton("⚙️")
 
         ## TODO: This button when resized makes the rest of the UI act funky.
