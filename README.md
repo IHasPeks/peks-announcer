@@ -44,6 +44,7 @@ Linux: `~/.config/lol-announcer/sounds/your_sound_pack`
 Windows: `%APPDATA\lol-announcer\sounds\your_sound_pack`.
 
 All sounds in a soundpack should be processed. there is an option in app to do this for you.
+
 Each sound pack should contain a config.json with the following data.
 ```json
 {
