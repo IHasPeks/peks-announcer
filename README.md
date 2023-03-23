@@ -34,10 +34,16 @@ announcer, so that you don't get any overlapping sounds.
 
 ## Create Sound Packs
 
-The program comes bundled with a sound pack. If you want to create your own
-you will need to place them in `~/.config/lol-announcer/sounds/your_sound_pack`
-on linux, and on windows in `%APPDATA\lol-announcer\sounds\your_sound_pack`.
+The program comes bundled with a few sound packs. If you want to create your own.
+you can use the creation tools in the app to generate a pack structure with everything
+you need. if you prefer to do this manually. read on.
 
+Sound Packs need to be placed in the following folders. these change depending
+on your platform of choice.
+Linux: `~/.config/lol-announcer/sounds/your_sound_pack`
+Windows: `%APPDATA\lol-announcer\sounds\your_sound_pack`.
+
+All sounds in a soundpack should be processed. there is an option in app to do this for you.
 Each sound pack should contain a config.json with the following data.
 ```json
 {
