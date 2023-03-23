@@ -158,20 +158,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         open_pack_button = QtWidgets.QPushButton("Open Pack Folder", settings_dialog)
         makepack = QtWidgets.QPushButton("Create New Pack", settings_dialog)
-        button3 = QtWidgets.QPushButton("Normalize All Sounds", settings_dialog)
+        normalize = QtWidgets.QPushButton("Process All Sounds", settings_dialog)
         button_close = QtWidgets.QPushButton("< Back", settings_dialog)
         
         open_pack_button.clicked.connect(self.open_local_sounds_dir)
         button_close.clicked.connect(settings_dialog.close)
         makepack.clicked.connect(self.create_sound_pack_structure)
-        button3.clicked.connect(self.normalizeau)
+        normalize.clicked.connect(self.normalizeau)
 
 
         
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
         vbox.addWidget(open_pack_button)
         vbox.addWidget(makepack)
-        vbox.addWidget(button3)
+        vbox.addWidget(normalize)
         vbox.addWidget(button_close)
 
         settings_dialog.exec_()
@@ -318,7 +318,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         total_files = sum([len(files) for r, d, files in os.walk(sound_packs_directory)])
 
-        self.progress_dialog = QtWidgets.QProgressDialog("Normalizing...", "Cancel", 0, total_files, self)
+        self.progress_dialog = QtWidgets.QProgressDialog("Processing...", "Cancel", 0, total_files, self)
         self.progress_dialog.setWindowTitle("Normalizing Sound Files")
         self.progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
         self.progress_dialog.setAutoClose(False)
@@ -330,11 +330,11 @@ class MainWindow(QtWidgets.QMainWindow):
         processau(sound_packs_directory, progress_callback=partial(self.updatebar, total_files))
 
         self.progress_dialog.close()
-        QtWidgets.QMessageBox.information(self, "Normalization Completed", "All sound files have been normalized.")
+        QtWidgets.QMessageBox.information(self, "Success", "All sound files have been processesed and are ready for use.")
 
     @pyqtSlot()
     def updatebar(self, total_files, file_count, filename):
-        self.progress_dialog.setLabelText(f"Normalizing: {filename}")
+        self.progress_dialog.setLabelText(f"Processing: {filename}")
         self.update_progress_bar(file_count, total_files)
 
     @pyqtSlot(int, int)
