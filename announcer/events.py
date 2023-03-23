@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 # Ignore the Unverified HTTPS request warning.
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 class Event:
     ENDPOINT = "liveclientdata/allgamedata"
 
