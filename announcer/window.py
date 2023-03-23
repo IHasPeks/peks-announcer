@@ -8,11 +8,13 @@ import json
 
 from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
+from .audio import processau
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QObject, QThread, QUrl, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from functools import partial
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.media_player_thread.start()
         self.event_player_thread.start()
 
+    @pyqtSlot()
     def setup_connections(self):
         self.volume_slider.valueChanged.connect(self.update_volume)
         self.volume_slider.valueChanged.connect(self.update_volume_level)
@@ -161,6 +164,8 @@ class MainWindow(QtWidgets.QMainWindow):
         open_pack_button.clicked.connect(self.open_local_sounds_dir)
         button_close.clicked.connect(settings_dialog.close)
         makepack.clicked.connect(self.create_sound_pack_structure)
+        button3.clicked.connect(self.normalizeau)
+
 
         
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
@@ -306,3 +311,33 @@ class MainWindow(QtWidgets.QMainWindow):
         error_dialog.setText("An error occurred:")
         error_dialog.setInformativeText(message)
         error_dialog.exec_()
+
+    @pyqtSlot()
+    def normalizeau(self):
+        sound_packs_directory = os.path.join(SOUNDS_DIR_LOCAL)
+
+        total_files = sum([len(files) for r, d, files in os.walk(sound_packs_directory)])
+
+        self.progress_dialog = QtWidgets.QProgressDialog("Normalizing...", "Cancel", 0, total_files, self)
+        self.progress_dialog.setWindowTitle("Normalizing Sound Files")
+        self.progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+        self.progress_dialog.setAutoClose(False)
+        self.progress_dialog.setAutoReset(False)
+        self.progress_dialog.forceShow()
+
+        self.progress_dialog.canceled.connect(self.progress_dialog.close)
+
+        processau(sound_packs_directory, progress_callback=partial(self.updatebar, total_files))
+
+        self.progress_dialog.close()
+        QtWidgets.QMessageBox.information(self, "Normalization Completed", "All sound files have been normalized.")
+
+    @pyqtSlot()
+    def updatebar(self, total_files, file_count, filename):
+        self.progress_dialog.setLabelText(f"Normalizing: {filename}")
+        self.update_progress_bar(file_count, total_files)
+
+    @pyqtSlot(int, int)
+    def update_progress_bar(self, current, total):
+        self.progress_dialog.setValue(current)
+        
