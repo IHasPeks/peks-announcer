@@ -8,7 +8,7 @@ def normalize_audio(audio, target_dBFS):
     change_in_dBFS = target_dBFS - audio.dBFS
     return audio.apply_gain(change_in_dBFS)
 
-def processau(directory, target_dBFS=-3.0, progress_callback=None, force=True):
+def processau(directory, target_dBFS=-3.5, progress_callback=None, force=True):
     file_count = 0
     for root, dirs, files in os.walk(directory):
         for file in files:

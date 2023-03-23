@@ -330,7 +330,7 @@ class MainWindow(QtWidgets.QMainWindow):
         processau(sound_packs_directory, progress_callback=partial(self.updatebar, total_files))
 
         self.progress_dialog.close()
-        QtWidgets.QMessageBox.information(self, "Success", "All sound files have been processesed and are ready for use.")
+        QtWidgets.QMessageBox.information(self, "Success", "All sound files have been processed and are ready for use.")
 
     @pyqtSlot()
     def updatebar(self, total_files, file_count, filename):
