@@ -163,18 +163,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         open_pack_button = QtWidgets.QPushButton("Open Pack Folder", settings_dialog)
         makepack = QtWidgets.QPushButton("Create New Pack", settings_dialog)
-        normalize = QtWidgets.QPushButton("Process All Sounds", settings_dialog)
+        normalise = QtWidgets.QPushButton("Process All Sounds", settings_dialog)
         button_close = QtWidgets.QPushButton("< Back", settings_dialog)
 
         open_pack_button.clicked.connect(self.open_local_sounds_dir)
         button_close.clicked.connect(settings_dialog.close)
         makepack.clicked.connect(self.create_sound_pack_structure)
-        normalize.clicked.connect(self.normalizeau)
+        normalise.clicked.connect(self.normaliseau)
 
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
         vbox.addWidget(open_pack_button)
         vbox.addWidget(makepack)
-        vbox.addWidget(normalize)
+        vbox.addWidget(normalise)
         vbox.addWidget(button_close)
 
         settings_dialog.exec_()
@@ -308,6 +308,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for folder in folders:
             os.makedirs(os.path.join(pack_directory, folder), exist_ok=True)
 
+
     @pyqtSlot(str)
     def show_error_message(self, message: str):
         error_dialog = QMessageBox(self)
@@ -318,7 +319,7 @@ class MainWindow(QtWidgets.QMainWindow):
         error_dialog.exec_()
 
     @pyqtSlot()
-    def normalizeau(self):
+    def normaliseau(self):
         sound_packs_directory = os.path.join(SOUNDS_DIR_LOCAL)
 
         total_files = sum(
@@ -331,7 +332,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.progress_dialog.setWindowTitle("Normalizing Sound Files")
         self.progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
         self.progress_dialog.setAutoClose(False)
-        self.progress_dialog.setAutoReset(False)
+        self.progress_dialog.setAutoReset(True)
         self.progress_dialog.forceShow()
 
         self.progress_dialog.canceled.connect(self.progress_dialog.close)
