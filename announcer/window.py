@@ -4,6 +4,7 @@ import subprocess
 import random
 import logging
 import time
+import json
 
 from .constants import SOUND_PACKS, SOUNDS_DIR_LOCAL
 from .events import Event
@@ -153,17 +154,18 @@ class MainWindow(QtWidgets.QMainWindow):
         settings_dialog.setFixedSize(175, 125)
 
         open_pack_button = QtWidgets.QPushButton("Open Pack Folder", settings_dialog)
-        
-        button2 = QtWidgets.QPushButton("Create New Pack", settings_dialog)
+        makepack = QtWidgets.QPushButton("Create New Pack", settings_dialog)
         button3 = QtWidgets.QPushButton("Normalize All Sounds", settings_dialog)
         button_close = QtWidgets.QPushButton("< Back", settings_dialog)
         
         open_pack_button.clicked.connect(self.open_local_sounds_dir)
         button_close.clicked.connect(settings_dialog.close)
+        makepack.clicked.connect(self.create_sound_pack_structure)
+
         
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
         vbox.addWidget(open_pack_button)
-        vbox.addWidget(button2)
+        vbox.addWidget(makepack)
         vbox.addWidget(button3)
         vbox.addWidget(button_close)
 
@@ -226,6 +228,75 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([opener, SOUNDS_DIR_LOCAL])
+
+    @pyqtSlot()
+    def create_sound_pack_structure(self):
+        pack_name = "New Soundpack (CHANGE ME)"
+        pack_directory = os.path.join(SOUNDS_DIR_LOCAL, pack_name)
+        os.makedirs(pack_directory, exist_ok=False)
+
+        config = {
+            "name": pack_name,
+            "version": "1.0.0",
+            "author": "Your name here",
+            "description": "Example Pack Description",
+        }
+
+        with open(os.path.join(pack_directory, "config.json"), "w") as config_file:
+            json.dump(config, config_file, indent=4)
+
+        folders = [
+            "PlayerFirstBlood",
+            "PlayerKill",
+            "PlayerDeath",
+            "PlayerDeathFirstBlood",
+            "Executed",
+            "AllyAce",
+            "AllyKill",
+            "AllyDeath",
+            "AllyDeathFirstBlood",
+            "AllyFirstBlood",
+            "AllyPentaKill",
+            "AllyQuadraKill",
+            "AllyTripleKill",
+            "AllyDoubleKill",
+            "AllyFirstBrick",
+            "AllyTurretKill",
+            "AllyInhibitorKill",
+            "AllyInhibitorRespawned",
+            "AllyInhibitorRespawningSoon",
+            "AllyDragonKill",
+            "AllyDragonKillStolen",
+            "AllyHeraldKill",
+            "AllyHeraldKillStolen",
+            "AllyBaronKill",
+            "AllyBaronKillStolen",
+            "EnemyAce",
+            "EnemyPentaKill",
+            "EnemyQuadraKill",
+            "EnemyTripleKill",
+            "EnemyDoubleKill",
+            "EnemyFirstBrick",
+            "EnemyTurretKill",
+            "EnemyInhibitorKill",
+            "EnemyInhibitorRespawned",
+            "EnemyInhibitorRespawningSoon",
+            "EnemyDragonKill",
+            "EnemyDragonKillStolen",
+            "EnemyHeraldKill",
+            "EnemyHeraldKillStolen",
+            "EnemyBaronKill",
+            "EnemyBaronKillStolen",
+            "Victory",
+            "Defeat",
+            "GameStart",
+            "Welcome",
+            "MinionsSpawning",
+            "MinionsSpawningSoon",
+        ]
+
+        for folder in folders:
+            os.makedirs(os.path.join(pack_directory, folder), exist_ok=True)
 
     @pyqtSlot(str)
     def show_error_message(self, message: str):
