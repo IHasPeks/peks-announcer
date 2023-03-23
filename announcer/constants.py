@@ -58,12 +58,10 @@ def process_sound_directory(sound_directory, is_global):
                     pack_name = json_data["name"]
                     pack_description = json_data.get("description", "")
                     pack_author = json_data.get("author", "")
-                    pack_version = json_data.get("version", "")
                     SOUND_PACKS[pack_name] = {
                         "path": os.path.join(sound_directory, dir),
                         "description": pack_description,
                         "author": pack_author,
-                        "version": pack_version,
                     }
                 except KeyError as e:
                     print(
