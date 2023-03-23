@@ -94,10 +94,11 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.sound_link.setOpenExternalLinks(True)
         self.open_pack_button = QtWidgets.QPushButton("Open Packs")
-        self.open_pack_button.clicked.connect(self.open_local_sounds_dir)
+        
         self.settings_button = QtWidgets.QPushButton("⚙️")
-        self.settings_button.setFixedSize(24,24)
 
+        ## TODO: This button when resized makes the rest of the UI act funky.
+        #self.settings_button.setFixedSize(24,24)
 
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
@@ -145,9 +146,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mute_button.clicked.connect(self.toggle_mute)
         self.test_volume_button.clicked.connect(self.play_random_sound)
         self.settings_button.clicked.connect(self.show_settings_dialog)
-
         self.sound_pack.currentIndexChanged.connect(self.update_description)
         self.media_player.error_occurred.connect(self.show_error_message)
+
+    @pyqtSlot()
+    def show_settings_dialog(self):
+        settings_dialog = QtWidgets.QDialog(self)
+        settings_dialog.setWindowTitle("Settings")
+        settings_dialog.setFixedSize(175, 125)
+
+        open_pack_button = QtWidgets.QPushButton("Open Pack Folder", settings_dialog)
+        
+        button2 = QtWidgets.QPushButton("Create New Pack", settings_dialog)
+        button3 = QtWidgets.QPushButton("Normalize All Sounds", settings_dialog)
+        button_close = QtWidgets.QPushButton("< Back", settings_dialog)
+        
+        open_pack_button.clicked.connect(self.open_local_sounds_dir)
+        button_close.clicked.connect(settings_dialog.close)
+        
+        vbox = QtWidgets.QVBoxLayout(settings_dialog)
+        vbox.addWidget(open_pack_button)
+        vbox.addWidget(button2)
+        vbox.addWidget(button3)
+        vbox.addWidget(button_close)
+
+        settings_dialog.exec_()
 
     @pyqtSlot()
     def toggle_mute(self):
@@ -206,26 +229,6 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             opener = "open" if sys.platform == "darwin" else "xdg-open"
             subprocess.call([opener, SOUNDS_DIR_LOCAL])
-
-    @pyqtSlot()
-    def show_settings_dialog(self):
-        settings_dialog = QtWidgets.QDialog(self)
-        settings_dialog.setWindowTitle("Settings")
-        settings_dialog.setFixedSize(300, 200)
-
-        button1 = QtWidgets.QPushButton("Button 1", settings_dialog)
-        button2 = QtWidgets.QPushButton("Button 2", settings_dialog)
-        button_close = QtWidgets.QPushButton("Close", settings_dialog)
-
-        button_close.clicked.connect(settings_dialog.close)
-
-        vbox = QtWidgets.QVBoxLayout(settings_dialog)
-        vbox.addWidget(button1)
-        vbox.addWidget(button2)
-        vbox.addWidget(button_close)
-
-        settings_dialog.exec_()
-
 
     @pyqtSlot(str)
     def show_error_message(self, message: str):
