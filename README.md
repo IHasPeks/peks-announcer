@@ -54,6 +54,8 @@ Each sound pack should contain a config.json with the following data.
     "description": "Example Pack Description"
 }
 ```
+*note that the version attribute is optional and not required. it is for internal use only*
+
 you can find an example.json file in the root directory of the repository or by clicking [here](https://github.com/IHasPeks/peks-announcer/blob/master/exampleconfig.json "here.") The config.json should be placed with the following directories below
 and each one should contain at least one audio file. You may add as many audio files as you
 want, a random one will be played during that event.
