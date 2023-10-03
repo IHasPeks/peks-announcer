@@ -9,5 +9,5 @@ PyQt5==5.15.7
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.11.0
 requests==2.31.0
-urllib3==1.26.14
+urllib3==1.26.17
 pydub==0.25.1
