@@ -99,7 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pack_info.setAlignment(Qt.AlignLeft)
         self.sound_pack = QtWidgets.QComboBox()
         formatted_sound_pack_names = [
-    f"{pack_name} - {pack_info['author']}" for pack_name, pack_info in SOUND_PACKS.items()
+        f"{pack_name} - {pack_info['author']}" for pack_name, pack_info in SOUND_PACKS.items()
 ]
         self.sound_pack.addItems(formatted_sound_pack_names)
 
@@ -169,9 +169,15 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def show_settings_dialog(self):
         settings_dialog = QtWidgets.QDialog(self)
-        settings_dialog.setWindowTitle("Settings")
-        settings_dialog.setFixedSize(175, 125)
+        settings_dialog.setWindowTitle("Dev Settings")
+        settings_dialog.setFixedSize(200, 225)
 
+        # Create new labels for the dialog
+        devdesc_label = QtWidgets.QLabel("These settings are intended to be used for making your own soundpacks. Be sure to have <a href='https://ffmpeg.org/'>FFmpeg installed</a> and on PATH when processing audio")
+        devdesc_label.setWordWrap(True)
+        devdesc_label.setOpenExternalLinks(True)
+        devdesc_label.setTextInteractionFlags(Qt.TextBrowserInteraction)
+    
         open_pack_button = QtWidgets.QPushButton("Open Pack Folder", settings_dialog)
         makepack = QtWidgets.QPushButton("Create New Pack", settings_dialog)
         normalise = QtWidgets.QPushButton("Process All Sounds", settings_dialog)
@@ -183,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
         normalise.clicked.connect(self.normaliseau)
 
         vbox = QtWidgets.QVBoxLayout(settings_dialog)
+        vbox.addWidget(devdesc_label)
         vbox.addWidget(open_pack_button)
         vbox.addWidget(makepack)
         vbox.addWidget(normalise)
@@ -241,7 +248,7 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def update_description(self):
         formatted_pack_key = self.sound_pack.currentText()
-        pack_key = formatted_pack_key.split(' - ')[0]  # Extract the pack name
+        pack_key = formatted_pack_key.split(' - ')[0]
         pack_description = SOUND_PACKS[pack_key]["description"]
         self.pack_info.setText(pack_description)
 
@@ -258,7 +265,22 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_sound_pack_structure(self):
         pack_name = "Template Pack"
         pack_directory = os.path.join(SOUNDS_DIR_LOCAL, pack_name)
-        os.makedirs(pack_directory, exist_ok=False)
+    
+        # Check if the directory already exists
+        if os.path.exists(pack_directory):
+            # Show a warning dialog
+            choice = QtWidgets.QMessageBox.warning(
+                self,
+                "Warning",
+                "The sound pack structure already exists and will be overwritten. Do you wish to continue?",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+        
+            # If the user selects 'No', return without doing anything
+            if choice == QtWidgets.QMessageBox.No:
+                return
+
+        os.makedirs(pack_directory, exist_ok=True)
 
         config = {
             "name": pack_name,
@@ -322,6 +344,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for folder in folders:
             os.makedirs(os.path.join(pack_directory, folder), exist_ok=True)
+    
+        # Show a feedback message box to inform the user of the successful creation
+        QtWidgets.QMessageBox.information(self, "Success", "Sound pack structure has been successfully created!")
 
 
     @pyqtSlot(str)
