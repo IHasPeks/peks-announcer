@@ -3,16 +3,18 @@
 Changes the default League of Legends announcer using Live Client Data API. Note that you need to mute the announcer in-game if you don't want overlapping sound.
 
 ## Build guide
-
+To build from source. first clone the repository then follow the guide below while in the path of the project
 Make sure to install the requirements before proceeding
 ```
 pip install -r requirements.txt
 ```
-
-To build and install on linux you can run run
-```sh
-make
-sudo make install
+then use
+```
+pip install -e .
+```
+and finally run by typing
+```
+announcer
 ```
 
 or you can build the executable yourself using pyinstaller
@@ -20,7 +22,7 @@ or you can build the executable yourself using pyinstaller
 pyinstaller cli.py --name "lol-announcer" --add-binary "announcer/sounds:announcer/sounds" --onefile --noconsole
 ```
 
-On windows you may need to replace the colon with a semicolon
+You may need to replace the colon with a semicolon
 ```sh
 pyinstaller cli.py --name "lol-announcer" --add-binary "announcer/sounds;announcer/sounds" --onefile --noconsole
 ```
