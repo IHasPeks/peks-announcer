@@ -98,7 +98,7 @@ class Event:
             and self.previous_game_time < 26
             and self.game_time < 28
         ):
-            self.new_events.append("Welcome")
+            self.new_events.append("GameStart")
         # Minions spawning soon.
         if (
             self.game_time >= 36
